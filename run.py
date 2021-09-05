@@ -1,6 +1,6 @@
 from app import server
 
-app = server.app
+manager = server.manager
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    manager.run()
