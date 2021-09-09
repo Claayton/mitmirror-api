@@ -1,15 +1,26 @@
-from flask import redirect, url_for
-from flask_login import UserMixin, login_required
-# from flask.scaffold import F
-from app import db, lm, bcpt
+from flask import g
+from flask.sessions import SecureCookieSessionInterface
+from flask_login import UserMixin, login_required, user_loaded_from_header
+from app import db, bcpt, app, auth
 from datetime import datetime
-import env
+import env # mudar futuramente
+import jwt
 
-@lm.user_loader
-def load_user(user_id):
-    return User.querry.filter_by(id=user_id).first()
+class CustomSessionInterface(SecureCookieSessionInterface):
+    """Prevent creating session from API requests."""
+    def save_session(self, *args, **kwargs):
+        if g.get('login_via_header'):
+            return
+        return super(CustomSessionInterface, self).save_session(*args,
+                                                                **kwargs)
 
+app.session_interface = CustomSessionInterface()
 
+@user_loaded_from_header.connect
+def user_loaded_from_header(self, user=None):
+    g.login_via_header = True
+
+    
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
@@ -52,6 +63,20 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return bcpt.check_password_hash(self.password_hash, password)
 
+    def gerenate_auth_token(self, expires_in=600):
+        return jwt.encode(
+            {'id': self.id, 'exp': datetime() + expires_in},
+            app.config['SECRET_KEY'], algorithm='Hs256')
+
+    @staticmethod
+    def verify_auth_token(token):
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['Hs256'])
+        except:
+            return
+        return User.query.get(data['id'])
+
     def create_secundary_id(self): # Configurar futuramente
         return self.id * self.id
 
@@ -89,3 +114,13 @@ class User(db.Model, UserMixin):
         server.login(msg['From'], password)
         server.sendmail(msg['From'], msg['To'], msg.as_string())
         server.quit()
+
+@auth.verify_password
+def verify_password(username_or_token, password):
+    user = User.verify_auth_token(username_or_token)
+    if not user:
+        user = User.query.filter_by(username=username_or_token).first()
+        if not user or not user.verify_password(password):
+            return False
+    g.user = user
+    return True
