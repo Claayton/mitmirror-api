@@ -4,6 +4,25 @@ from app.models.users import User
 from datetime import datetime
 
 def post_user():
+    """
+    -> Receives data in json format from the client with the following user information:
+        * name,
+        * email,
+        * username,
+        * password.
+    -> Treat the information so as not to register two users with thr same email or username.
+    -> Encrypt the received password with a hash.
+    -> Saves the information to the database.
+    :return: The data again in json format, now with the encrypted password, a unique id for each user and the registration date.
+    """
+
+    email_exists = User.query.filter_by(email=request.json['email']).first()
+    username_exists = User.query.filter_by(username=request.json['username']).first()
+    if email_exists:
+        return jsonify({'message': 'Email unavailable', 'data': {}}), 500
+    elif username_exists:
+        return jsonify({'message': 'Username unavailable', 'data': {}}), 500
+
     name = request.json['name']
     email = request.json['email']
     username = request.json['username']
@@ -26,7 +45,7 @@ def post_user():
         return jsonify({'message': 'Successfully registered', 'data': json_user}), 201
     except:
         return jsonify({'message': 'Unable to create', 'data': {}}), 500
-        
+
 def update_user(id):
     name = request.json['name']
     email = request.json['email']
