@@ -1,128 +1,79 @@
-from flask import request, g
-from flask_login import login_user, logout_user, login_required
-from app import app, db, auth
-from app.models.tables import User
+from flask import jsonify, g, request
+from flask_login import login_required, logout_user, login_user, current_user
+from app import app
+from app.views import users, helper
 
-def generate_response(status,
-                    message,
-                    content_name=False,
-                    content=False):
+@app.route('/api/users/', methods=['POST'])
+def post_user():
+    return users.post_user()
 
-    response = {}
-    response["message"] = message
-    response["status"] = status
+@app.route('/api/users/<id>', methods=['PUT'])
+def put_user(id):
+    return users.update_user(id)
 
-    if content_name and content:
-        response[f"{content_name}"] = content
-    return response
+@app.route('/api/users/', methods=['GET'])
+def get_users():
+    return users.get_users()
 
+@app.route('/api/users/<id>/', methods=['GET'])
+def get_user(id):
+    return users.get_user(id)
 
-@app.route('/api/login/', methods=['POST', 'GET'])
-def login():
+@app.route('/api/users/<id>/', methods=['DELETE'])
+def delete_user(id):
+    return users.delete_user(id)
 
-    body = request.get_json()
-    print(f'\033[31m{body}\033[m')
-    if "remember_me" not in body:
-        body["remember_me"] = False
+@app.route('/api/auth', methods=['POST'])
+def authenticate():
+    return helper.auth()
 
-    user = User.query.filter_by(username=body["username"]).first()
-    if not user:
-        return generate_response(404, 'user not found')
-    elif not user.verify_password(body["password"]):
-        return generate_response(401, 'Incorrect username or password')
-    else:
-        if body["remember_me"]:
-            login_user(user, remember=True)
-        else:
-            login_user(user)
-        user = {
-                "id": f"{user.id}",
-                "name": f"{user.name}",
-                "username": f"{user.username}",
-                "password": f"{user.password_hash}"
-                }
-        return generate_response(200, 'User found', 'user', user)
-
-@app.route('/api/<token>/user/', methods=['POST'])
-def register(token=''):
-    from datetime import datetime
-
-    body = request.get_json()
-
-    if "name" not in body:
-        return generate_response(401, 'Field name required')
-    elif "lastname" not in body:
-        body["lastname"] = ''
-    elif "email" not in body:
-        return generate_response(401, 'Field email required')
-    elif "password" not in body:
-        return generate_response(401, 'Field password required')
-    elif "confirm_password" not in body:
-        return generate_response(401, 'Field confirm_password required')
-    if "remember_me" not in body:
-        body["remember_me"] = False
-
-    user_name = User.query.filter_by(username=body["username"]).first()
-    if user_name:
-        return generate_response(401, 'This username already registered')
-    user_email = User.query.filter_by(email=body["email"]).first()
-    if user_email:
-        return generate_response(401, 'This email already registered')
-    elif body["password"] != body["confirm_password"]:
-        return generate_response(401, 'The passwords are different')
-    else:
-        i = User(f'{body["name"]} {body["lastname"]}'.strip(), body["email"], body["username"], body["password"], datetime.today())
-        i.hash_password(body["password"])
-        db.session.add(i)
-        db.session.commit()
-
-        user = {
-            "id": i.id,
-            "name": i.name,
-            "username": i.username,
-            "email": i.email,
-            "username": i.username,
-            "remember_me": body["remember_me"]
-        }
-        return generate_response(200, 'Registered user', 'user', user)
-
-@app.route('/api/token')
-@auth.login_required
-def get_auth_token():
-    token = g.user.generate_auth_token(600)
-    return ({'token': token.decode('ascii'), 'duration': 600})
-
-@app.route('/api/<token>/user/<get_user>', methods=['GET'])
-def get_user(token, get_user):
-    i = User.query.filter_by(username=get_user).first()
-    if not i:
-        i = User.query.filter_by(id=get_user).first()
-        if not i:
-            return generate_response(404, 'user not found')
-    user = {
-            "id": i.id,
-            "name": i.name,
-            "username": i.username,
-            "email": i.email,
-            "username": i.username
-        }
-    return generate_response(200, 'User found', 'user', user)
+@app.route('/', methods=['GET'])
+@helper.token_required
+def root(current_user):
+    return jsonify ({'message': f'Hello {current_user.name}'})
 
 
-@auth.login_required
-@app.route('/api/token/user/<get_user>', methods=['DELETE'])
-def delete(get_user, token=''):
+"""
+@lm.user_loader
+def load_user(user_id):
+    return User.query.filter_by(id=user_id).first()
 
-    i = User.query.filter_by(username=get_user).first()
-    if not i:
-        i = User.query.filter_by(id=get_user).first()
-        if not i:
-            return generate_response(404, 'user not found')
+@lm.request_loader
+def load_user_from_request(request):
 
-    db.session.delete(i)
-    db.session.commit()
-    user = {
-            "id": i.id,
-            "name": i.name,
-        }
-    return generate_response(200, 'User deleted', 'user', user)
+    # first, try to login using the api_key url arg
+    api_key = request.args.get('api_key')
+    if api_key:
+        user = User.query.filter_by(api_key=api_key).first()
+        if user:
+            return user
+
+    # next, try to login using Basic Auth
+    api_key = request.headers.get('Authorization')
+    if api_key:
+        api_key = api_key.replace('Basic ', '', 1)
+        try:
+            api_key = base64.b64decode(api_key)
+        except TypeError:
+            pass
+        user = User.query.filter_by(api_key=api_key).first()
+        if user:
+            return user
+
+    # finally, return None if both methods did not login the user
+    return None
+
+
+class CustomSessionInterface(SecureCookieSessionInterface):
+    Prevent creating session from API requests.
+    def save_session(self, *args, **kwargs):
+        if g.get('login_via_header'):
+            return
+        return super(CustomSessionInterface, self).save_session(*args,
+                                                                **kwargs)
+
+app.session_interface = CustomSessionInterface()
+
+@user_loaded_from_header.connect
+def user_loaded_from_header(self, user=None):
+    g.login_via_header = True"""

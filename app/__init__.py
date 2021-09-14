@@ -35,5 +35,5 @@ lm = server.lm
 bcpt = server.bcpt
 auth = server.auth
 
-from app.models import tables
+from app.models import users
 from app.controllers.routes import *
