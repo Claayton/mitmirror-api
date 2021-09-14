@@ -1,4 +1,4 @@
-from app import db
+from app.extensions.database import db
 from flask import request, jsonify
 from app.models.users import User
 from datetime import datetime

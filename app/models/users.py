@@ -1,6 +1,8 @@
+from app.extensions.database import db
+from app.extensions.encryptation import bcpt
+
 from flask.sessions import SecureCookieSessionInterface
 from flask_login import UserMixin
-from app import db, bcpt
 from env import *
 from datetime import datetime
 from itsdangerous import (TimedJSONWebSignatureSerializer
