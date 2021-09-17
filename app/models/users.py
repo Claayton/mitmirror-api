@@ -1,12 +1,9 @@
 from app.extensions.database import db
 from app.extensions.encryptation import bcpt
 
-from flask.sessions import SecureCookieSessionInterface
 from flask_login import UserMixin
 from env import *
 from datetime import datetime
-from itsdangerous import (TimedJSONWebSignatureSerializer
-                          as Serializer, BadSignature, SignatureExpired)
 
 
 class User(db.Model, UserMixin):
@@ -38,7 +35,6 @@ class User(db.Model, UserMixin):
         self.last_login = self.login_time() # Configurar futuramente
         self.date_joined = date_joined
 
-        
     def __repr__(self):
         return f'<User {self.username}>'
 
@@ -88,3 +84,20 @@ class User(db.Model, UserMixin):
         server.login(msg['From'], password)
         server.sendmail(msg['From'], msg['To'], msg.as_string())
         server.quit()
+
+class Token(db.Model):
+    __tablename__ = 'tokens'
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    token = db.Column(db.String(100))
+    expiration  = db.Column(db.DateTime, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    user = db.relationship('User', foreign_keys=user_id)
+
+    def __init__(self, token, user_id):
+        self.token = token
+        self.user_id = user_id
+
+    def __repr__(self):
+        return f'<Token {self.id}>'
