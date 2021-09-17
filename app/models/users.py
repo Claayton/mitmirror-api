@@ -2,7 +2,7 @@ from app.extensions.database import db
 from app.extensions.encryptation import bcpt
 
 from flask_login import UserMixin
-from env import *
+from config.email import email_infos
 from datetime import datetime
 
 
@@ -73,8 +73,8 @@ class User(db.Model, UserMixin):
         msg = MIMEMultipart()
         message = msg_message
 
-        password = password_mitmirrortests
-        msg['From'] = email_mitmirrortests
+        password = email_infos['password']
+        msg['From'] = email_infos['email']
         msg['To'] = self.email
         msg['Subject'] = msg_subject
 
