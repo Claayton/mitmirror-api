@@ -11,15 +11,15 @@ from app import app
 
 
 def auth():
-    auth = request.authorization
-    if not auth or not auth.username or not auth.password:
+    auth = request.json
+    if not auth or not auth["username"] or not auth["password"]:
         return jsonify ({'message': 'Could not verify', 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
 
-    user = User.query.filter_by(username=auth.username).first()
+    user = User.query.filter_by(username=auth["username"]).first()
     if not user:
         return jsonify ({'message': 'user not found', 'data': {}}), 401
 
-    if user and user.verify_password(auth.password):
+    if user and user.verify_password(auth["password"]):
         token = jwt.encode({'username': user.username, 'exp': datetime.now() + timedelta(hours=4)}, app.config['SECRET_KEY'])
 
         return jsonify ({'message': 'Validated sucessfully', 'token': token, 'exp': datetime.now() + timedelta(hours=12)})

@@ -1,5 +1,6 @@
 from app.views import users, helper
 from flask import jsonify
+from flask_cors import cross_origin # A principio isso só é requirido para rodar a aplicação em server local
 
 from app import app
 
@@ -8,7 +9,8 @@ from app import app
 def root(current_user):
     return jsonify ({'message': f'Hello {current_user.name}'})
 
-@app.route('/api/auth', methods=['POST'])
+@app.route('/api/auth/', methods=['POST'])
+@cross_origin() # A principio isso só é requirido para rodar a aplicação em server local
 def authenticate():
     return helper.auth()
 
