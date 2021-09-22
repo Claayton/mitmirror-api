@@ -3,7 +3,7 @@ from app.extensions.encryptation import bcpt
 
 from flask_login import UserMixin
 from config.email import email_infos
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class User(db.Model, UserMixin):
@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     username = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(100), nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
 
     secondary_id = db.Column(db.Integer, nullable=False)
     is_staff = db.Column(db.Boolean, nullable=False)
@@ -89,14 +89,15 @@ class Token(db.Model):
     __tablename__ = 'tokens'
 
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    token = db.Column(db.String(100))
+    token = db.Column(db.String(256))
     expiration  = db.Column(db.DateTime, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     user = db.relationship('User', foreign_keys=user_id)
 
-    def __init__(self, token, user_id):
+    def __init__(self, token, user_id, expiration):
         self.token = token
+        self.expiration = expiration
         self.user_id = user_id
 
     def __repr__(self):
