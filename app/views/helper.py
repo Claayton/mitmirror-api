@@ -55,12 +55,12 @@ def token_required(f):
         token = request.args.get('token')
         if not token:
             return jsonify ({'message': 'Token is missing', 'data': {}}), 401
-        # try:
-        user_token = Token.query.filter_by(token=token).first()
-        current_user = User.query.filter_by(id=user_token.user_id).first()
-        if datetime.now() > user_token.expiration:
-            TimeoutError
-        # except:
+        try:
+            user_token = Token.query.filter_by(token=token).first()
+            current_user = User.query.filter_by(id=user_token.user_id).first()
+            if datetime.now() > user_token.expiration:
+                TimeoutError
+        except:
             return jsonify ({'message': 'Token is invalid or expired', 'data': {}}), 401
         return f (current_user, *args, **kwargs)
     return decorated
