@@ -11,8 +11,8 @@ def root(current_user):
     return jsonify ({'message': f'Hello {current_user.name}'})
 
 @app.route('/api/auth/', methods=['POST'])
-@cross_origin()
-# A principio isso só é requirido para rodar a aplicação em server local
+@cross_origin() # A principio isso só é requirido para rodar a aplicação em server local
+
 def authenticate():
     return helper.auth()
 
