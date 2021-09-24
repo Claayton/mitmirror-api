@@ -1,12 +1,10 @@
 from app.extensions.database import db
-from app.models.users import User, Token
+from app.blueprints.models.users import User, Token
 
 import jwt
 from flask import request, jsonify
 from functools import wraps
 from datetime import datetime, timedelta
-
-from app import app
 
 def auth():
     """

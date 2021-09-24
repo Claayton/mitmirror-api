@@ -1,6 +1,6 @@
 from app.extensions.database import db
 from flask import request, jsonify
-from app.models.users import User
+from app.blueprints.models.users import User
 from datetime import datetime
 
 def post_user():
