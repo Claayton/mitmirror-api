@@ -20,6 +20,6 @@ def post_user():
 def put_user(id):
     return users_ctrl.update_user(id)
 
-@users_routes_bp.route('/api/users/<id>/', methods=['DELETE'])
+@users_routes_bp.route('/api/users/<id>', methods=['DELETE'])
 def delete_user(id):
     return users_ctrl.delete_user(id)

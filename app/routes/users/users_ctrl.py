@@ -3,6 +3,50 @@ from flask import request, jsonify
 from app.models.users import User
 from datetime import datetime
 
+def get_users():
+    """
+    -> It has the sole function of returning the data of all users registered in the database or an error message if there is none
+    :return: The data in json format of all registered users, sorting by id.
+    """
+
+    users = User.query.all()
+    json_users = {}
+    if users:
+        for user in users:
+            json_user = {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "username": user.username,
+            "password_hash": user.password_hash,
+            "date_joined": user.date_joined
+            }
+            json_users[json_user["id"]]=json_user
+           
+        
+        return jsonify({'message': 'Successfully fetched', 'data': json_users}), 200
+    return jsonify({'message': 'nothing found', 'data': {}}), 404
+
+def get_user(id):
+    """
+    -> It function is to return the data a user registered in the database or an error message if it does not exist.
+    :param id: Receives the user id in order to identify the user.
+    :return: The data in json format of a registered user.
+    """
+
+    user = User.query.filter_by(id=id).first()
+    if not user:
+        return jsonify({'message': "User don't exist", 'data': {}}), 404
+    json_user = {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "username": user.username,
+        "password_hash": user.password_hash,
+        "date_joined": user.date_joined
+    }
+    return jsonify({'message': 'Successfully fetched', 'data': json_user}), 200
+
 def post_user():
     """
     -> Receives data in json format from the client to register a new user with the following information:
@@ -19,9 +63,9 @@ def post_user():
     email_exists = User.query.filter_by(email=request.json['email']).first()
     username_exists = User.query.filter_by(username=request.json['username']).first()
     if email_exists:
-        return jsonify({'message': 'Email unavailable', 'data': {}}), 500
+        return jsonify({'message': 'Email unavailable', 'data': {}}), 403
     elif username_exists:
-        return jsonify({'message': 'Username unavailable', 'data': {}}), 500
+        return jsonify({'message': 'Username unavailable', 'data': {}}), 403
 
     name = request.json['name']
     email = request.json['email']
@@ -96,50 +140,6 @@ def update_user(id):
     except:
         return jsonify({'message': 'Unable to update', 'data': {}}), 500
     
-def get_users():
-    """
-    -> It has the sole function of returning the data of all users registered in the database or an error message if there is none
-    :return: The data in json format of all registered users, sorting by id.
-    """
-
-    users = User.query.all()
-    json_users = {}
-    if users:
-        for user in users:
-            json_user = {
-            "id": user.id,
-            "name": user.name,
-            "email": user.email,
-            "username": user.username,
-            "password_hash": user.password_hash,
-            "date_joined": user.date_joined
-            }
-            json_users[json_user["id"]]=json_user
-           
-        
-        return jsonify({'message': 'Successfully fetched', 'data': json_users}), 200
-    return jsonify({'message': 'nothing found', 'data': {}}), 404
-
-def get_user(id):
-    """
-    -> It function is to return the data a user registered in the database or an error message if it does not exist.
-    :param id: Receives the user id in order to identify the user.
-    :return: The data in json format of a registered user.
-    """
-
-    user = User.query.filter_by(id=id).first()
-    if not user:
-        return jsonify({'message': "User don't exist", 'data': {}}), 404
-    json_user = {
-        "id": user.id,
-        "name": user.name,
-        "email": user.email,
-        "username": user.username,
-        "password_hash": user.password_hash,
-        "date_joined": user.date_joined
-    }
-    return jsonify({'message': 'Successfully fetched', 'data': json_user}), 200
-
 def delete_user(id):
     """
     -> It has the function of deleting all the data data of a registered user in the database.
@@ -148,8 +148,9 @@ def delete_user(id):
     """
 
     user = User.query.filter_by(id=id).first()
+
     if not user:
-        return jsonify({'message': "User don't exist", 'data': {}}), 404
+        return jsonify({'message': "User don't exist", 'data': {}}), 403
 
     if user:
         json_user = {

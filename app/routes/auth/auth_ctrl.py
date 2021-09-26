@@ -19,7 +19,7 @@ def auth():
 
     user = User.query.filter_by(username=auth["username"]).first()
     if not user:
-        return jsonify ({'message': 'user not found', 'data': {}}), 401
+        return jsonify ({'message': 'user not found', 'data': {}}), 403
 
     if user and user.verify_password(auth["password"]):
         try:
