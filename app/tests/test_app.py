@@ -1,5 +1,3 @@
-from pytest import mark
-
 def test_if_the_root_route_is_working(client):
     url = "/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IlRlc3RzIiwiZXhwIjoxNjMyNjgyNjQ2fQ.PTyLYv5UM3FVaE62fSIp03thPZflzk19eeNel0UKOqA"
     response = client.get(url)
