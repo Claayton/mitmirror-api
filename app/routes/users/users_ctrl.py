@@ -1,6 +1,6 @@
 from app.extensions.database import db
 from flask import request, jsonify
-from app.blueprints.models.users import User
+from app.models.users import User
 from datetime import datetime
 
 def post_user():
@@ -138,7 +138,7 @@ def get_user(id):
         "password_hash": user.password_hash,
         "date_joined": user.date_joined
     }
-    return jsonify({'message': 'Successfully fetched', 'data': json_user}), 201
+    return jsonify({'message': 'Successfully fetched', 'data': json_user}), 200
 
 def delete_user(id):
     """

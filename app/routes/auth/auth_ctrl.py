@@ -1,5 +1,6 @@
 from app.extensions.database import db
-from app.blueprints.models.users import User, Token
+from app.models.users import User, Token
+import config
 
 import jwt
 from flask import request, jsonify
@@ -24,14 +25,14 @@ def auth():
         try:
             user_token = Token.query.filter_by(user_id=user.id).first()
             while True:
-                token = jwt.encode({'username': user.username, 'exp': datetime.now() + timedelta(hours=4)}, app.config['SECRET_KEY'])
+                token = jwt.encode({'username': user.username, 'exp': datetime.now() + timedelta(hours=4)}, config.SECRET_KEY)
                 if token != user_token.token:
                     break
             user_token.token = token
             user_token.expiration = datetime.now() + timedelta(hours=4)
             db.session.commit()
         except:
-            token = jwt.encode({'username': user.username, 'exp': datetime.now() + timedelta(hours=4)}, app.config['SECRET_KEY'])
+            token = jwt.encode({'username': user.username, 'exp': datetime.now() + timedelta(hours=4)}, config.SECRET_KEY)
 
             user_token = Token(token, user.id, datetime.now() + timedelta(hours=4))
             db.session.add(user_token)
