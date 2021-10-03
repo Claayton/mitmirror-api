@@ -33,3 +33,5 @@ class NewApp:
     def run(self):
         self.app = self.create_app()
         self.app.run()
+
+app = NewApp()
