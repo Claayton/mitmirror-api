@@ -35,3 +35,6 @@ class NewApp:
         self.app.run()
 
 app = NewApp()
+
+if __name__ == '__main__':
+    app.run()
