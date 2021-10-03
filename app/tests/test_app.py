@@ -1,5 +1,5 @@
 def test_if_the_root_route_is_working(client):
-    url = "/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IlRlc3RzIiwiZXhwIjoxNjMyNjgyNjQ2fQ.PTyLYv5UM3FVaE62fSIp03thPZflzk19eeNel0UKOqA"
+    url = "/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6IlRlc3RzIiwiZXhwIjoxNjMzMjM0MDU1fQ.62H8YHAIJwlT08KSN7E26fJCtlFJqLNg5v_n4BAQSpU"
     response = client.get(url)
     assert response.status_code == 200
 
@@ -13,14 +13,14 @@ def test_if_the_auth_route_is_working(client):
     assert response.status_code == 403
 
 def test_if_the_get_user_route_is_working(client):
-    url = "/api/users/"
-    response =client.get(url)
-    assert response.json["data"]["6"]["name"] == 'Tests'
-
-def test_if_the_get_users_route_is_working(client):
-    url = "/api/users/1/"
+    url = "/api/users/5/"
     response = client.get(url)
     assert response.status_code == 200
+
+def test_if_the_get_users_route_is_working(client):
+    url = "/api/users/"
+    response =client.get(url)
+    assert response.json["data"]["5"]["name"] == 'Tests'
 
 def test_if_the_post_users_route_is_working(client):
     url ="/api/users/"
@@ -34,7 +34,7 @@ def test_if_the_post_users_route_is_working(client):
     assert response.status_code == 403
 
 def test_if_the_put_users_route_is_working(client):
-    url ="/api/users/6"
+    url ="/api/users/5"
     data = {
         "name": "Tests",
         "email": "tests@tests.com",
