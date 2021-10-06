@@ -1,7 +1,5 @@
 from config.database import database_infos
 
-DEBUG = True
-
 JSORNIFY_PRETTYPRINT_REGULA = True
 
 SECRET_KEY = database_infos['secret_key']
