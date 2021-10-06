@@ -4,7 +4,7 @@ from app.routes.auth import auth_ctrl
 
 auth_routes_bp = Blueprint("auth_routes_bp", __name__)
 
-@auth_routes_bp.route('/', methods=['GET'])
+@auth_routes_bp.route('/root/', methods=['GET'])
 @auth_ctrl.token_required
 def root(current_user):
     return jsonify ({'message': f'Hello {current_user.name}'})
