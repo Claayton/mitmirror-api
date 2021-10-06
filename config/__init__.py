@@ -2,7 +2,7 @@ from config.database import database_infos
 
 DEBUG = True
 
-JSONIFY_PRETTYPRINT_REGULAR = True
+JSORNIFY_PRETTYPRINT_REGULA = True
 
 SECRET_KEY = database_infos['secret_key']
 SQLALCHEMY_TRACK_MODIFICATIONS = True
