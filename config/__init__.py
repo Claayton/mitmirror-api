@@ -2,6 +2,8 @@ from config.database import database_infos
 
 DEBUG = True
 
+JSONIFY_PRETTYPRINT_REGULAR = True
+
 SECRET_KEY = database_infos['secret_key']
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{}:{}@{}/{}".format(
