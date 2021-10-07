@@ -8,7 +8,7 @@ from app.extensions import migrations
 from app.extensions import admin
 
 from app.routes.users.users_routes import users_routes_bp
-from app.routes.auth.auth_routes import auth_routes_bp, authenticate
+from app.routes.auth.auth_routes import auth_routes_bp
 from app.routes.index.index_routes import index_routes_bp
 
 def minimal_app(config_file):
