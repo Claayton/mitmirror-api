@@ -36,13 +36,13 @@ class User(db.Model, UserMixin):
         self.date_joined = date_joined
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f'<User {self.name}>'
 
     def find(self, find_username):
         return self.query.filter_by(username=find_username).first()
 
     def hash_password(self, password):
-        self.password_hash = bcpt.generate_password_hash (password). decode ('utf-8')
+        self.password_hash = bcpt.generate_password_hash (password).decode('utf-8')
 
     def verify_password(self, password):
         return bcpt.check_password_hash(self.password_hash, password)

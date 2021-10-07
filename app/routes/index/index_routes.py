@@ -5,4 +5,4 @@ index_routes_bp = Blueprint('index_routes_bp', __name__)
 
 @index_routes_bp.route('/')
 def index():
-    return jsonify({'message': 'Successfully fetched', 'data': index_ctrl.index()}), 200
+    return jsonify({'message': 'Successfully fetched', 'routes': index_ctrl.index()}), 200
