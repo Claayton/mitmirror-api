@@ -7,9 +7,9 @@ from app.extensions import crossing
 from app.extensions import migrations
 from app.extensions import admin
 
-from app.routes.users.users_routes import users_routes_bp
-from app.routes.auth.auth_routes import auth_routes_bp
-from app.routes.index.index_routes import index_routes_bp
+from app.routes.users import users_routes
+from app.routes.auth import auth_routes
+from app.routes.index import index_routes
 
 def minimal_app(config_file):
     app = Flask(__name__)
@@ -26,9 +26,9 @@ def create_app():
     migrations.init_app(app)
     admin.init_app(app)
     
-    app.register_blueprint(users_routes_bp)
-    app.register_blueprint(auth_routes_bp)
-    app.register_blueprint(index_routes_bp)
+    app.register_blueprint(users_routes.bp)
+    app.register_blueprint(auth_routes.bp)
+    app.register_blueprint(index_routes.bp)
     return app
 
 def tests_app():
@@ -41,7 +41,7 @@ def tests_app():
     migrations.init_app(app)
     admin.init_app(app)
     
-    app.register_blueprint(users_routes_bp)
-    app.register_blueprint(auth_routes_bp)
-    app.register_blueprint(index_routes_bp)
+    app.register_blueprint(users_routes.bp)
+    app.register_blueprint(auth_routes.bp)
+    app.register_blueprint(index_routes.bp)
     return app
