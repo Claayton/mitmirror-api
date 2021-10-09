@@ -1,8 +1,15 @@
 from flask_admin import Admin
+from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import ModelView
 from wtforms import fields, Form
 from app.extensions.database import db
 from app.models.users import User, Token
+
+# from flask_admin.base import AdminIndexView
+# from flask_login import login_required
+
+# AdminIndexView._handle_view = login_required(AdminIndexView._handle_view)
+# sqla.ModelView._handle_view = login_required(sqla.ModelView._handle_view)
 
 
 class UserForm(Form):
