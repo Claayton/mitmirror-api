@@ -2,8 +2,8 @@ from flask import Flask
 
 from app.extensions import database
 from app.extensions import authentication
-from app.extensions import encryptation
-from app.extensions import route_crossing
+from app.extensions import security
+from app.extensions import crossing
 from app.extensions import migrations
 from app.extensions import admin
 
@@ -20,9 +20,9 @@ def create_app():
     app = minimal_app(config_file='config')
 
     database.init_app(app)
-    # authentication.init_app(app)
-    encryptation.init_app(app)
-    route_crossing.init_app(app)
+    authentication.init_app(app)
+    security.init_app(app)
+    crossing.init_app(app)
     migrations.init_app(app)
     admin.init_app(app)
     
@@ -36,8 +36,8 @@ def tests_app():
 
     database.init_app(app)
     authentication.init_app(app)
-    encryptation.init_app(app)
-    route_crossing.init_app(app)
+    security.init_app(app)
+    crossing.init_app(app)
     migrations.init_app(app)
     admin.init_app(app)
     

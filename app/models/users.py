@@ -1,5 +1,5 @@
 from app.extensions.database import db
-from app.extensions.encryptation import bcpt
+from app.extensions.security import bcpt
 
 from flask_login import UserMixin
 from config.email import email_infos
