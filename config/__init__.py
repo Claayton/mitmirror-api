@@ -1,6 +1,6 @@
 from config.database import database_infos
 
-JSORNIFY_PRETTYPRINT_REGULA = True
+JSONIFY_PRETTYPRINT_REGULAR = True
 
 SECRET_KEY = database_infos['secret_key']
 SQLALCHEMY_TRACK_MODIFICATIONS = True

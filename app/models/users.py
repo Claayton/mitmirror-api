@@ -1,5 +1,5 @@
 from app.extensions.database import db
-from app.extensions.encryptation import bcpt
+from app.extensions.security import bcpt
 
 from flask_login import UserMixin
 from config.email import email_infos
@@ -36,13 +36,13 @@ class User(db.Model, UserMixin):
         self.date_joined = date_joined
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f'<User {self.name}>'
 
     def find(self, find_username):
         return self.query.filter_by(username=find_username).first()
 
     def hash_password(self, password):
-        self.password_hash = bcpt.generate_password_hash (password). decode ('utf-8')
+        self.password_hash = bcpt.generate_password_hash (password).decode('utf-8')
 
     def verify_password(self, password):
         return bcpt.check_password_hash(self.password_hash, password)
@@ -102,3 +102,54 @@ class Token(db.Model):
 
     def __repr__(self):
         return f'<Token {self.id}>'
+
+    def auth():
+        """
+        -> Receive username and password in json format, check if the user is registered and the password is correct, generate a new token and register it in the db, if there is already one registered, the system will generate a different one and replace the current one, along with an expiration time for the new token.
+        :return: The new token generated and its expiration time in json format.
+        """
+        from app.extensions.database import db
+        import config
+        import jwt
+        from flask import request, jsonify
+        
+        auth = request.json
+        if not auth or not auth["username"] or not auth["password"]:
+            return jsonify ({'message': 'Could not verify', 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
+
+        user = User.query.filter_by(username=auth["username"]).first()
+        if not user:
+            return jsonify ({'message': 'user not found', 'data': {}}), 403
+
+        if user and user.verify_password(auth["password"]):
+            payloads = {
+                    'exp': datetime.utcnow() + timedelta(hours=4),
+                    'iat': datetime.utcnow(),
+                    'sub': user.username
+                }
+            try:
+                user_token = Token.query.filter_by(user_id=user.id).first()
+                while True:
+                    token = jwt.encode(
+                        payloads,
+                        config.SECRET_KEY,
+                        algorithm='HS256'
+                    )
+                    if token != user_token.token:
+                        break
+                user_token.token = token
+                user_token.expiration = datetime.now() + timedelta(hours=4)
+                db.session.commit()
+            except:
+                token = jwt.encode(
+                        payloads,
+                        config.SECRET_KEY,
+                        algorithm='HS256'
+                )
+                user_token = Token(token, user.id, datetime.utcnow() + timedelta(hours=4))
+                db.session.add(user_token)
+                db.session.commit() 
+            
+            return jsonify ({'message': 'Validated sucessfully', 'token': user_token.token, 'exp': user_token.expiration}), 200
+
+        return jsonify ({'message': 'Could not verify', 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
