@@ -103,7 +103,7 @@ class Token(db.Model):
     def __repr__(self):
         return f'<Token {self.id}>'
 
-    def auth():
+    def encode_jwt(encode_email, encode_password):
         """
         -> Receive username and password in json format, check if the user is registered and the password is correct, generate a new token and register it in the db, if there is already one registered, the system will generate a different one and replace the current one, along with an expiration time for the new token.
         :return: The new token generated and its expiration time in json format.
@@ -111,45 +111,38 @@ class Token(db.Model):
         from app.extensions.database import db
         import config
         import jwt
-        from flask import request, jsonify
+        from flask import jsonify
         
-        auth = request.json
-        if not auth or not auth["username"] or not auth["password"]:
-            return jsonify ({'message': 'Could not verify', 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
-
-        user = User.query.filter_by(username=auth["username"]).first()
+        user = User.query.filter_by(email=encode_email).first()
         if not user:
             return jsonify ({'message': 'user not found', 'data': {}}), 403
 
-        if user and user.verify_password(auth["password"]):
+        if user and user.verify_password(encode_password):
             payloads = {
                     'exp': datetime.utcnow() + timedelta(hours=4),
                     'iat': datetime.utcnow(),
-                    'sub': user.username
+                    'sub': user.id,
+                    'name': user.name
                 }
-            try:
-                user_token = Token.query.filter_by(user_id=user.id).first()
-                while True:
-                    token = jwt.encode(
-                        payloads,
-                        config.SECRET_KEY,
-                        algorithm='HS256'
-                    )
-                    if token != user_token.token:
-                        break
-                user_token.token = token
-                user_token.expiration = datetime.now() + timedelta(hours=4)
-                db.session.commit()
-            except:
-                token = jwt.encode(
-                        payloads,
-                        config.SECRET_KEY,
-                        algorithm='HS256'
-                )
-                user_token = Token(token, user.id, datetime.utcnow() + timedelta(hours=4))
-                db.session.add(user_token)
-                db.session.commit() 
+            token = jwt.encode(
+                    payloads,
+                    config.SECRET_KEY,
+                    algorithm='HS256'
+            )
+            user_token = Token(token, user.id, datetime.utcnow() + timedelta(hours=4))
+            db.session.add(user_token)
+            db.session.commit() 
             
-            return jsonify ({'message': 'Validated sucessfully', 'token': user_token.token, 'exp': user_token.expiration}), 200
+            return jsonify ({'message': 'Validated sucessfully'}), 200, {'Authorization': user_token.token, 'exp': user_token.expiration}
 
         return jsonify ({'message': 'Could not verify', 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
+
+    def decode_jwt(token):
+        import jwt
+        import config
+        try:
+            payload = jwt.decode(jwt=token, key=config.SECRET_KEY, algorithms=['HS256'])
+            current_user = User.query.filter_by(id=payload['sub']).first()
+            return current_user
+        except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
+            return False

@@ -13,6 +13,7 @@ click==8.0.1
 cryptography==3.4.8
 decorator==5.1.0
 distlib==0.3.3
+ecdsa==0.17.0
 filelock==3.0.12
 Flask==2.0.1
 Flask-Admin==1.5.8
@@ -55,9 +56,10 @@ prompt-toolkit==3.0.20
 protobuf==3.17.3
 ptyprocess==0.7.0
 py==1.10.0
+pyasn1==0.4.8
 pycparser==2.20
 Pygments==2.10.0
-PyJWT==2.1.0
+PyJWT==2.2.0
 pylint==2.11.1
 pyparsing==2.4.7
 pyrsistent==0.18.0
@@ -66,6 +68,7 @@ pytest-flask==1.2.0
 python-dotenv==0.19.0
 pytz==2021.1
 PyYAML==5.4.1
+rsa==4.7.2
 six==1.16.0
 SQLAlchemy==1.4.22
 toml==0.10.2

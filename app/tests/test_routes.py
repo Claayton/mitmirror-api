@@ -11,7 +11,7 @@ def test_if_the_root_route_is_working(client):
 def test_if_the_auth_route_is_working(client):
     url ="/api/auth/"
     data = {
-        "username": "test123",
+        "email": "test@test.com",
         "password": "test123"
     }
     response = client.post(url, json=data)

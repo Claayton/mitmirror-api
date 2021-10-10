@@ -1,7 +1,7 @@
 from flask import Flask
 
 from app.extensions import database
-from app.extensions import authentication
+from app.extensions import auth
 from app.extensions import security
 from app.extensions import crossing
 from app.extensions import migrations
@@ -20,7 +20,7 @@ def create_app():
     app = minimal_app(config_file='config')
 
     database.init_app(app)
-    authentication.init_app(app)
+    auth.init_app(app)
     security.init_app(app)
     crossing.init_app(app)
     migrations.init_app(app)
@@ -35,7 +35,7 @@ def tests_app():
     app = minimal_app(config_file='config.config_tests')
 
     database.init_app(app)
-    authentication.init_app(app)
+    auth.init_app(app)
     security.init_app(app)
     crossing.init_app(app)
     migrations.init_app(app)
