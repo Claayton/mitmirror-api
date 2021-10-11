@@ -115,7 +115,7 @@ class Token(db.Model):
         
         user = User.query.filter_by(email=encode_email).first()
         if not user:
-            return jsonify ({'message': 'user not found', 'data': {}}), 403
+            return 403
 
         if user and user.verify_password(encode_password):
             payloads = {
@@ -129,13 +129,13 @@ class Token(db.Model):
                     config.SECRET_KEY,
                     algorithm='HS256'
             )
-            user_token = Token(token, user.id, datetime.utcnow() + timedelta(hours=4))
+            user_token = Token(token, user.id, payloads["exp"])
             db.session.add(user_token)
             db.session.commit() 
             
-            return jsonify ({'message': 'Validated sucessfully'}), 200, {'Authorization': user_token.token, 'exp': user_token.expiration}
+            return {'Authorization': user_token.token, 'exp': user_token.expiration}
 
-        return jsonify ({'message': 'Could not verify', 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
+        return 401
 
     def decode_jwt(token):
         import jwt

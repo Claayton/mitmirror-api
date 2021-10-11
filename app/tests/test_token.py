@@ -6,15 +6,11 @@ def test_encode_auth_token(client):
         "password": "test123"
     }
     auth_token = Token.encode_jwt(data['email'], data['password'])
-    assert auth_token[1] == 200
+    assert auth_token['Authorization'] is not None
 
 def test_decode_auth_token2(client):
     from app.models.users import Token
+    auth_token =Token.encode_jwt("test@test.com", "test123")
+    decoded_token = Token.decode_jwt(auth_token['Authorization'])
 
-    data = {
-        "email": "test@test.com",
-        "password": "test123"
-    }
-    auth_token = Token.encode_jwt(data['email'], data['password'])
-    token = auth_token[2]['Authorization']
-    assert Token.decode_jwt(token).username == 'test123'
+    assert decoded_token.username == 'test123'
