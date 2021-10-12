@@ -13,5 +13,4 @@ def pre_encode():
     elif token == 401:
         return jsonify ({'message': 'Could not verify', 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
     else:
-        return jsonify ({'message': 'Validated sucessfully', 'Authorization': token["Authorization"], 'exp': token["exp"]}), 200
-    return 
+        return jsonify ({'message': 'Validated sucessfully', 'Authorization': token["Authorization"], 'exp': token["exp"]}), 200, {'Authorization': token["Authorization"], 'exp': token["exp"]}
