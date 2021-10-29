@@ -133,7 +133,11 @@ class Token(db.Model):
             db.session.add(user_token)
             db.session.commit() 
             
-            return {'Authorization': user_token.token, 'exp': user_token.expiration}
+            return {
+                'Authorization': user_token.token,
+                'exp': user_token.expiration,
+                'id': user_token.user_id
+                }
 
         return 401
 
