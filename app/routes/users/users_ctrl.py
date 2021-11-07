@@ -18,11 +18,8 @@ def get_users():
             "name": user.name,
             "email": user.email,
             "username": user.username,
-            "password_hash": user.password_hash,
-            "date_joined": user.date_joined
             }
             json_users[json_user["id"]]=json_user
-           
         
         return jsonify({'message': 'Successfully fetched', 'data': json_users}), 200
     return jsonify({'message': 'nothing found', 'data': {}}), 404
@@ -42,7 +39,6 @@ def get_user(id):
         "name": user.name,
         "email": user.email,
         "username": user.username,
-        "password_hash": user.password_hash,
         "date_joined": user.date_joined
     }
     return jsonify({'message': 'Successfully fetched', 'data': json_user}), 200
@@ -83,7 +79,6 @@ def post_user():
             "name": user.name,
             "email": user.email,
             "username": user.username,
-            "password_hash": user.password_hash,
             "date_joined": user.date_joined
         }
         return jsonify({'message': 'Successfully registered', 'data': json_user}), 201
@@ -133,7 +128,6 @@ def update_user(id):
             "name": user.name,
             "email": user.email,
             "username": user.username,
-            "password_hash": user.password_hash,
             "date_joined": user.date_joined
         }
         return jsonify({'message': 'Successfully updated', 'data': json_user}), 201
@@ -158,7 +152,6 @@ def delete_user(id):
         "name": user.name,
         "email": user.email,
         "username": user.username,
-        "password_hash": user.password_hash,
         "date_joined": user.date_joined
     }
         try:
