@@ -10,8 +10,8 @@ def get_users():
     return users_ctrl.get_users()
 
 @bp.route('/api/users/<id>/', methods=['GET'])
-@cross_origin()
 @login_required
+@cross_origin()
 def get_user(id):
     return users_ctrl.get_user(id)
 
@@ -21,13 +21,13 @@ def post_user():
     return users_ctrl.post_user()
 
 @bp.route('/api/users/<id>/', methods=['PUT'])
-@cross_origin()
 @login_required
+@cross_origin()
 def put_user(id):
     return users_ctrl.update_user(id)
 
 @bp.route('/api/users/<id>/', methods=['DELETE'])
-@cross_origin()
 @login_required
+@cross_origin()
 def delete_user(id):
     return users_ctrl.delete_user(id)
