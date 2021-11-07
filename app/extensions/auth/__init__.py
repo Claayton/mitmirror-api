@@ -1,4 +1,6 @@
-from flask_login import LoginManager
+from flask import g, current_app
+from flask.sessions import SecureCookieSessionInterface
+from flask_login import LoginManager, user_loaded_from_header
 from app.models.users import User, Token
 from app.models.users import Token
 
@@ -27,4 +29,19 @@ def load_user_from_request(request):
             return decoded
     
 def init_app(app):
+    from flask_login import user_loaded_from_header
+
     lm.init_app(app)
+    class CustomSessionInterface(SecureCookieSessionInterface):
+        """Prevent creating session from API requests."""
+        def save_session(self, *args, **kwargs):
+            if g.get('login_via_header'):
+                return
+            return super(CustomSessionInterface, self).save_session(*args,
+                                                                    **kwargs)
+
+    app.session_interface = CustomSessionInterface()
+
+    @user_loaded_from_header.connect
+    def user_loaded_from_header(self, user=None):
+        g.login_via_header = True
