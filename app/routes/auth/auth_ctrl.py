@@ -17,7 +17,8 @@ def pre_encode():
             'message': 'Validated sucessfully',
             'Authorization': token["Authorization"],
             'exp': token["exp"],
-            'id': token["id"]}), 200, {
+            'user': token["user"]
+        }), 200, {
                 'Authorization': token["Authorization"],
                 'exp': token["exp"],
                 'id': token["id"]

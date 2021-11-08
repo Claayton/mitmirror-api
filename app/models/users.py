@@ -111,8 +111,7 @@ class Token(db.Model):
         from app.extensions.database import db
         import config
         import jwt
-        from flask import jsonify
-        
+
         user = User.query.filter_by(email=encode_email).first()
         if not user:
             return 403
@@ -136,8 +135,14 @@ class Token(db.Model):
             return {
                 'Authorization': user_token.token,
                 'exp': user_token.expiration,
-                'id': user_token.user_id
+                'id': user_token.user_id,
+                'user': {
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email,
+                    "username": user.username
                 }
+            }
 
         return 401
 

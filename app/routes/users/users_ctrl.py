@@ -17,7 +17,7 @@ def get_users():
             "id": user.id,
             "name": user.name,
             "email": user.email,
-            "username": user.username,
+            "username": user.username
             }
             json_users[json_user["id"]]=json_user
         
