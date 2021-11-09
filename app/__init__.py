@@ -3,7 +3,7 @@ from flask import Flask
 from app.extensions import database
 from app.extensions import auth
 from app.extensions import security
-from app.extensions import crossing
+from app.extensions import cors
 from app.extensions import migrations
 from app.extensions import admin
 
@@ -22,7 +22,7 @@ def create_app():
     database.init_app(app)
     auth.init_app(app)
     security.init_app(app)
-    crossing.init_app(app)
+    cors.init_app(app)
     migrations.init_app(app)
     admin.init_app(app)
     
@@ -37,7 +37,7 @@ def tests_app():
     database.init_app(app)
     auth.init_app(app)
     security.init_app(app)
-    crossing.init_app(app)
+    cors.init_app(app)
     migrations.init_app(app)
     admin.init_app(app)
     
