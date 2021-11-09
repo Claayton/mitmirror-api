@@ -21,12 +21,7 @@ def get_users():
             }
             json_users[json_user["id"]]=json_user
         
-        return jsonify({
-            'message': 'Successfully fetched',
-            'data': json_users
-        }), 200, {
-            "Access-Control-Allow-Origin": "*"
-        }
+        return jsonify({'message': 'Successfully fetched', 'data': json_users}), 200
     return jsonify({'message': 'nothing found', 'data': {}}), 404
 
 def get_user(id):
@@ -46,7 +41,12 @@ def get_user(id):
         "username": user.username,
         "date_joined": user.date_joined
     }
-    return jsonify({'message': 'Successfully fetched', 'data': json_user}), 200
+    return jsonify({
+        'message': 'Successfully fetched',
+        'data': json_user
+    }), 200, {
+        "Access-Control-Allow-Origin": "*"
+    }
 
 def post_user():
     """
