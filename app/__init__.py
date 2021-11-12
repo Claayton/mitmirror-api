@@ -19,10 +19,10 @@ def minimal_app(config_file):
 def create_app():
     app = minimal_app(config_file='config')
 
+    cors.init_app(app)
+    security.init_app(app)
     database.init_app(app)
     auth.init_app(app)
-    security.init_app(app)
-    cors.init_app(app)
     migrations.init_app(app)
     admin.init_app(app)
     

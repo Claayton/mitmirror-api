@@ -1,7 +1,7 @@
-from flask import g, current_app
+from flask import g
 from flask.sessions import SecureCookieSessionInterface
-from flask_login import LoginManager, user_loaded_from_header
-from app.models.users import User, Token
+from flask_login import LoginManager
+from app.models.users import Token
 from app.models.users import Token
 
 lm = LoginManager()
@@ -15,13 +15,14 @@ def load_user_from_request(request):
     if api_key:
         decoded = Token.decode_jwt(api_key)
         if not decoded:
-            return None
+            pass
         else:
             return decoded
         
     # next, try to login using JWT
     api_key = request.headers.get('Authorization')
     if api_key:
+        api_key = api_key.replace('Bearer ', '', 1)
         decoded = Token.decode_jwt(api_key)
         if not decoded:
             return None
@@ -30,8 +31,8 @@ def load_user_from_request(request):
     
 def init_app(app):
     from flask_login import user_loaded_from_header
-
-    lm.init_app(app)
+    
+    
     class CustomSessionInterface(SecureCookieSessionInterface):
         """Prevent creating session from API requests."""
         def save_session(self, *args, **kwargs):
@@ -40,8 +41,11 @@ def init_app(app):
             return super(CustomSessionInterface, self).save_session(*args,
                                                                     **kwargs)
 
+
     app.session_interface = CustomSessionInterface()
 
     @user_loaded_from_header.connect
     def user_loaded_from_header(self, user=None):
         g.login_via_header = True
+
+    lm.init_app(app)

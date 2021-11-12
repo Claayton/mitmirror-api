@@ -44,9 +44,7 @@ def get_user(id):
     return jsonify({
         'message': 'Successfully fetched',
         'data': json_user
-    }), 200, {
-        "Access-Control-Allow-Origin": "*"
-    }
+    }), 200
 
 def post_user():
     """
