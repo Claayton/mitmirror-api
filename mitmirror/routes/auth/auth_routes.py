@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify
 from flask_login import login_required, current_user
 from flask_cors import cross_origin
-from app.models.users import Token
+from mitmirror.models.users import Token
 
 
 bp = Blueprint("auth_routes_bp", __name__)

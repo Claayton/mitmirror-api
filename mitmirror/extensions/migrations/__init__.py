@@ -1,5 +1,5 @@
 from flask_migrate import Migrate, MigrateCommand
-from app.extensions.database import db
+from mitmirror.extensions.database import db
 
 migrate = Migrate()
 

@@ -2,8 +2,8 @@ from flask_admin import Admin
 from flask_admin.contrib import sqla
 from flask_admin.contrib.sqla import ModelView
 from wtforms import fields, Form
-from app.extensions.database import db
-from app.models.users import User, Token
+from mitmirror.extensions.database import db
+from mitmirror.models.users import User, Token
 
 # from flask_admin.base import AdminIndexView
 # from flask_login import login_required

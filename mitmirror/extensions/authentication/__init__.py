@@ -1,5 +1,5 @@
 from flask_login import LoginManager
-from app.models.users import User, Token
+from mitmirror.models.users import User, Token
 
 lm = LoginManager()
 

@@ -1,5 +1,5 @@
-from app.extensions.database import db
-from app.extensions.security import bcpt
+from mitmirror.extensions.database import db
+from mitmirror.extensions.security import bcpt
 
 from flask_login import UserMixin
 from config.email import email_infos
@@ -108,7 +108,7 @@ class Token(db.Model):
         -> Receive username and password in json format, check if the user is registered and the password is correct, generate a new token and register it in the db, if there is already one registered, the system will generate a different one and replace the current one, along with an expiration time for the new token.
         :return: The new token generated and its expiration time in json format.
         """
-        from app.extensions.database import db
+        from mitmirror.extensions.database import db
         import config
         import jwt
         from flask import request, jsonify

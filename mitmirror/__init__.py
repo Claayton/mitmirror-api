@@ -1,15 +1,15 @@
 from flask import Flask
 
-from app.extensions import database
-from app.extensions import authentication
-from app.extensions import security
-from app.extensions import crossing
-from app.extensions import migrations
-from app.extensions import admin
+from mitmirror.extensions import database
+from mitmirror.extensions import authentication
+from mitmirror.extensions import security
+from mitmirror.extensions import crossing
+from mitmirror.extensions import migrations
+from mitmirror.extensions import admin
 
-from app.routes.users import users_routes
-from app.routes.auth import auth_routes
-from app.routes.index import index_routes
+from mitmirror.routes.users import users_routes
+from mitmirror.routes.auth import auth_routes
+from mitmirror.routes.index import index_routes
 
 def minimal_app(config_file):
     app = Flask(__name__)

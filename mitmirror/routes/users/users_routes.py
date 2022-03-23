@@ -1,4 +1,4 @@
-from app.routes.users import users_ctrl
+from mitmirror.routes.users import users_ctrl
 from flask import Blueprint
 
 bp = Blueprint("users_routes_bp", __name__)

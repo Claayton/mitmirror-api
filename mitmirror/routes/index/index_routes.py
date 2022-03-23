@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from app.routes.index import index_ctrl
+from mitmirror.routes.index import index_ctrl
 
 bp = Blueprint('index_routes_bp', __name__)
 
