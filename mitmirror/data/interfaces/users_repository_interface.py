@@ -9,6 +9,23 @@ class UserRepositoryInterface(ABC):
     """Interface para a classe UserRepository"""
 
     @abstractmethod
+    def insert_user(
+        self,
+        name: str,
+        email: str,
+        username: str,
+        password_hash: str,
+        secundary_id: int = 0,  # Configurar futuramente
+        is_staff: bool = False,  # Configurar futuramente
+        is_active_user: bool = False,  # Configurar futuramente
+        date_joined: Type[datetime] = datetime.today(),  # Configurar futuramente
+        last_login: Type[datetime] = datetime.today(),
+    ) -> User:
+        """Deve ser implementado"""
+
+        raise Exception("Deve ser implementado o metodo insert_user")
+
+    @abstractmethod
     def get_user(
         self, user_id: int = None, username: str = None, email: str = None
     ) -> User:
@@ -21,23 +38,6 @@ class UserRepositoryInterface(ABC):
         """Deve ser implementado"""
 
         raise Exception("Deve ser implementado o metodo get_users")
-
-    @abstractmethod
-    def insert_user(
-        self,
-        name: str,
-        email: str,
-        username: str,
-        password_hash: str,
-        secondary_id: int = 0,  # Configurar futuramente
-        is_staff: bool = False,  # Configurar futuramente
-        is_active: bool = False,  # Configurar futuramente
-        date_joined: Type[datetime] = None,
-        last_login: Type[datetime] = datetime.today(),
-    ) -> User:
-        """Deve ser implementado"""
-
-        raise Exception("Deve ser implementado o metodo insert_user")
 
     @abstractmethod
     def update_user(
