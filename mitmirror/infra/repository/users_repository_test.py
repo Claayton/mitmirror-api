@@ -1,7 +1,7 @@
 """Testes para a classe UserRepository"""
 from pytest import raises
 from mitmirror.domain.models import User
-from mitmirror.infra.repository.conftest import fake_user
+from mitmirror.infra.entities import User as UserModel
 from mitmirror.config import database_infos
 from mitmirror.errors import DefaultError
 from ..config import DataBaseConnectionHandler
@@ -10,23 +10,23 @@ from ..config import DataBaseConnectionHandler
 database = DataBaseConnectionHandler(database_infos["connection_string"])
 
 
-def test_insert_user(user_repository):
+def test_insert_user(user_repository_with_delete_user, mock_user):
     """
     Testando o metodo insert_user.
     Deve retornar um objeto do tipo User com os mesmos parametros enviados.
     """
 
-    response = user_repository.insert_user(
-        name=fake_user["name"],
-        email=fake_user["email"],
-        username=fake_user["username"],
-        password_hash=fake_user["password_hash"],
-        secundary_id=fake_user["secundary_id"],
+    response = user_repository_with_delete_user.insert_user(
+        name=mock_user["name"],
+        email=mock_user["email"],
+        username=mock_user["username"],
+        password_hash=mock_user["password_hash"],
+        secundary_id=mock_user["secundary_id"],
     )
 
     engine = database.get_engine()
     query_user = engine.execute(
-        f"""SELECT * FROM users WHERE username='{fake_user["username"]}';"""
+        f"""SELECT * FROM users WHERE username='{mock_user["username"]}';"""
     ).fetchone()
 
     # Testando se as informacoes enviadas pelo metodo estao no db.
@@ -38,7 +38,7 @@ def test_insert_user(user_repository):
     assert response.secundary_id == query_user.secundary_id
 
 
-def test_insert_user_without_name_param(user_repository):
+def test_insert_user_without_name_param(user_repository, mock_user):
     """
     Testando o erro no metodo insert_user.
     Deixando de utilizar o parametro name.
@@ -49,16 +49,16 @@ def test_insert_user_without_name_param(user_repository):
 
         user_repository.insert_user(
             name=None,
-            email=fake_user["email"],
-            username=fake_user["username"],
-            password_hash=fake_user["password_hash"],
-            secundary_id=fake_user["secundary_id"],
+            email=mock_user["email"],
+            username=mock_user["username"],
+            password_hash=mock_user["password_hash"],
+            secundary_id=mock_user["secundary_id"],
         )
 
     assert "error" in str(error.value)
 
 
-def test_insert_user_without_email_param(user_repository):
+def test_insert_user_without_email_param(user_repository, mock_user):
     """
     Testando o erro no metodo insert_user.
     Deixando de utilizar o parametro email.
@@ -68,17 +68,17 @@ def test_insert_user_without_email_param(user_repository):
     with raises(DefaultError) as error:
 
         user_repository.insert_user(
-            name=fake_user["name"],
+            name=mock_user["name"],
             email=None,
-            username=fake_user["username"],
-            password_hash=fake_user["password_hash"],
-            secundary_id=fake_user["secundary_id"],
+            username=mock_user["username"],
+            password_hash=mock_user["password_hash"],
+            secundary_id=mock_user["secundary_id"],
         )
 
     assert "error" in str(error.value)
 
 
-def test_insert_user_without_username_param(user_repository):
+def test_insert_user_without_username_param(user_repository, mock_user):
     """
     Testando o erro no metodo insert_user.
     Deixando de utilizar o parametro username.
@@ -88,17 +88,17 @@ def test_insert_user_without_username_param(user_repository):
     with raises(DefaultError) as error:
 
         user_repository.insert_user(
-            name=fake_user["name"],
-            email=fake_user["email"],
+            name=mock_user["name"],
+            email=mock_user["email"],
             username=None,
-            password_hash=fake_user["password_hash"],
-            secundary_id=fake_user["secundary_id"],
+            password_hash=mock_user["password_hash"],
+            secundary_id=mock_user["secundary_id"],
         )
 
     assert "error" in str(error.value)
 
 
-def test_insert_user_without_password_hash_param(user_repository):
+def test_insert_user_without_password_hash_param(user_repository, mock_user):
     """
     Testando o erro no metodo insert_user.
     Deixando de utilizar o parametro password_hash.
@@ -108,17 +108,17 @@ def test_insert_user_without_password_hash_param(user_repository):
     with raises(DefaultError) as error:
 
         user_repository.insert_user(
-            name=fake_user["name"],
-            email=fake_user["email"],
-            username=fake_user["username"],
+            name=mock_user["name"],
+            email=mock_user["email"],
+            username=mock_user["username"],
             password_hash=None,
-            secundary_id=fake_user["secundary_id"],
+            secundary_id=mock_user["secundary_id"],
         )
 
     assert "error" in str(error.value)
 
 
-def test_insert_user_without_secundary_id_param(user_repository):
+def test_insert_user_without_secundary_id_param(user_repository, mock_user):
     """
     Testando o erro no metodo insert_user.
     Deixando de utilizar o parametro secundary_id.
@@ -128,10 +128,10 @@ def test_insert_user_without_secundary_id_param(user_repository):
     with raises(DefaultError) as error:
 
         user_repository.insert_user(
-            name=fake_user["name"],
-            email=fake_user["email"],
-            username=fake_user["username"],
-            password_hash=fake_user["password_hash"],
+            name=mock_user["name"],
+            email=mock_user["email"],
+            username=mock_user["username"],
+            password_hash=mock_user["password_hash"],
             secundary_id=None,
         )
 
