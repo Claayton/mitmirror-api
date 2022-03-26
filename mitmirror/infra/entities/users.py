@@ -1,6 +1,4 @@
 """Instancia da tabela User e seus metodos"""
-from typing import Type
-from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from mitmirror.infra.config import Base
@@ -24,29 +22,6 @@ class User(Base):
     date_joined = Column(DateTime, nullable=False)
 
     tokens = relationship("Token")
-
-    def __init__(
-        self,
-        name: str,
-        email: str,
-        username: str,
-        password_hash: str,
-        secondary_id: int = 0,  # Configurar futuramente
-        is_staff: bool = False,  # Configurar futuramente
-        is_active: bool = False,  # Configurar futuramente
-        date_joined: Type[datetime] = None,
-    ):
-
-        self.name = name
-        self.email = email
-        self.username = username
-        self.password_hash = password_hash
-
-        self.secondary_id = secondary_id
-        self.is_istaff = is_staff
-        self.is_active = is_active
-        self.last_login = datetime.today()
-        self.date_joined = date_joined
 
     def __repr__(self):
         return f"<User {self.name}>"
