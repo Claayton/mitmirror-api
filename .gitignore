@@ -18,3 +18,4 @@ build/
 *.egg-info/
 
 app/tests.sqlite3
+storage.db
