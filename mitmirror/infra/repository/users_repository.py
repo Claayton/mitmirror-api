@@ -76,8 +76,9 @@ class UserRepository(UserRepositoryInterface):
             except Exception as error:
 
                 database.session.rollback()
-                # raise DefaultError(message=str(error)) from error
-                raise error
+                raise DefaultError(
+                    type_error=422, message="Parametros invalidos!, error"
+                ) from error
 
             finally:
 
