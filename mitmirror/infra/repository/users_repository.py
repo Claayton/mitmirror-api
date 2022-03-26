@@ -129,7 +129,7 @@ class UserRepository(UserRepositoryInterface):
             else:
 
                 raise DefaultError(
-                    message="E necessario o user_id, username ou email, para encontrar o usuario!",
+                    message="E necessario o user_id, username ou email, para encontrar o usuario!, error",
                     type_error=400,
                 )
 
@@ -139,14 +139,29 @@ class UserRepository(UserRepositoryInterface):
 
             return []
 
-        except Exception as error:
+        except Exception as error:  # pylint: disable=W0703
 
-            database.session.rollback()
-            raise DefaultError(message=str(error)) from error
+            try:
+
+                database.session.rollback()
+
+            except Exception:  # pylint: disable=W0703
+
+                pass
+
+            finally:
+
+                raise DefaultError(message=str(error)) from error
 
         finally:
 
-            database.session.close()
+            try:
+
+                database.session.close()
+
+            except Exception:  # pylint: disable=W0703
+
+                pass
 
     def get_users(self) -> List[User]:
         """
