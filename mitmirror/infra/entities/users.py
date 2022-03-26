@@ -21,7 +21,7 @@ class User(Base):
     last_login = Column(DateTime, nullable=False)
     date_joined = Column(DateTime, nullable=False)
 
-    tokens = relationship("Token")
+    token = relationship("Token", back_populates="user")
 
     def __repr__(self):
         return f"<User {self.name}>"

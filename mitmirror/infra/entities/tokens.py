@@ -16,7 +16,7 @@ class Token(Base):
     expiration = Column(DateTime, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
 
-    user = relationship("User")
+    user = relationship("User", back_populates="token")
 
     def __init__(self, token: str, user_id: int, expiration: Type[datetime]):
 
