@@ -43,7 +43,7 @@ def user_repository_with_one_user_registered(
     user_repository, fake_user
 ):  # pylint: disable=W0621
     """Fixture para montar o objeto UserRepository com usuario registrado"""
-    print(f"\nNa fixture: {fake_user.username}")
+
     engine = database.get_engine()
     engine.execute(
         f"""
