@@ -47,9 +47,9 @@ class UserRepositoryInterface(ABC):
         email: str = None,
         username: str = None,
         password_hash: str = None,
-        secondary_id: int = None,
+        secundary_id: int = None,
         is_staff: bool = None,
-        is_active: bool = None,
+        is_active_user: bool = None,
         date_joined: Type[datetime] = None,
         last_login: Type[datetime] = None,
     ) -> User:
