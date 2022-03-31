@@ -222,9 +222,7 @@ class UserRepository(UserRepositoryInterface):
 
             try:
 
-                user = (
-                    database.session.query(UserModel).filter_by(user_id=user_id).one()
-                )
+                user = database.session.query(UserModel).filter_by(id=user_id).one()
                 username_exist = (
                     database.session.query(UserModel).filter_by(username=username).one()
                 )
@@ -283,14 +281,25 @@ class UserRepository(UserRepositoryInterface):
                     last_login=user.last_login,
                 )
 
-            except Exception as error:
+            except Exception:  # pylint: disable=W0703
 
-                database.session.rollback()
-                raise DefaultError(message=str(error)) from error
+                try:
+
+                    database.session.rollback()
+
+                except Exception:  # pylint: disable=W0703
+
+                    pass
 
             finally:
 
-                database.session.close()
+                try:
+
+                    database.session.close()
+
+                except Exception:  # pylint: disable=W0703
+
+                    pass
 
     def delete_user(self, user_id: int) -> User:
         """
