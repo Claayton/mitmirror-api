@@ -1,31 +1,20 @@
 """Arquivo para fixtures"""
 from pytest import fixture
-from faker import Faker
 from mitmirror.config import database_infos
 from . import UserRepository
+from ..tests import mock_user
 from ..config import DataBaseConnectionHandler
 
 
-fake = Faker()
 database = DataBaseConnectionHandler(database_infos["connection_string"])
+user = mock_user()
 
 
-@fixture(scope="module")
-def mock_user():
+@fixture(scope="session")
+def fake_user():
     """Mock de usuario"""
 
-    return {
-        "user_id": fake.random_number(),
-        "name": fake.name(),
-        "email": f"{fake.name()}@test.com",
-        "username": f"{fake.name()}_vidaloka",
-        "password_hash": fake.pystr(),
-        "secundary_id": fake.random_number(),
-        "is_staff": False,
-        "is_active_user": False,
-        "last_login": fake.date_time(),
-        "date_joined": fake.date_time(),
-    }
+    return user
 
 
 @fixture
@@ -37,11 +26,11 @@ def user_repository():  # pylint: disable=W0621
 
 @fixture
 def user_repository_with_delete_user(
-    user_repository, mock_user
+    user_repository, fake_user
 ):  # pylint: disable=W0621
     """Fixture para montar o objeto e deletar um usuario no final"""
 
-    username = mock_user["username"]
+    username = fake_user.username
 
     yield user_repository
 
@@ -51,10 +40,10 @@ def user_repository_with_delete_user(
 
 @fixture
 def user_repository_with_one_user_registered(
-    user_repository, mock_user
+    user_repository, fake_user
 ):  # pylint: disable=W0621
     """Fixture para montar o objeto UserRepository com usuario registrado"""
-
+    print(f"\nNa fixture: {fake_user.username}")
     engine = database.get_engine()
     engine.execute(
         f"""
@@ -71,21 +60,21 @@ def user_repository_with_one_user_registered(
             date_joined
         )
         VALUES (
-            '{mock_user["user_id"]}',
-            '{mock_user["name"]}',
-            '{mock_user["email"]}',
-            '{mock_user["username"]}',
-            '{mock_user["password_hash"]}',
-            '{mock_user["secundary_id"]}',
-            '{mock_user["is_staff"]}',
-            '{mock_user["is_active_user"]}',
-            '{mock_user["last_login"]}',
-            '{mock_user["date_joined"]}'
+            '{fake_user.id}',
+            '{fake_user.name}',
+            '{fake_user.email}',
+            '{fake_user.username}',
+            '{fake_user.password_hash}',
+            '{fake_user.secundary_id}',
+            '{fake_user.is_staff}',
+            '{fake_user.is_active_user}',
+            '{fake_user.last_login}',
+            '{fake_user.date_joined}'
         );
         """
     )
 
-    username = mock_user["username"]
+    username = fake_user.username
 
     yield user_repository
 
@@ -95,70 +84,44 @@ def user_repository_with_one_user_registered(
 
 @fixture
 def user_repository_with_two_users_registered(
-    user_repository, mock_user
+    user_repository, fake_user
 ):  # pylint: disable=W0621
     """Fixture para montar o objeto UserRepository com usuarios registrados"""
 
     engine = database.get_engine()
-    engine.execute(
-        f"""
-        INSERT INTO users (
-            id,
-            name,
-            email,
-            username,
-            password_hash,
-            secundary_id,
-            is_staff,
-            is_active_user,
-            last_login,
-            date_joined
-        )
-        VALUES (
-            '{mock_user["user_id"]}',
-            '{mock_user["name"]}',
-            '{mock_user["email"]}',
-            '{mock_user["username"]}',
-            '{mock_user["password_hash"]}',
-            '{mock_user["secundary_id"]}',
-            '{mock_user["is_staff"]}',
-            '{mock_user["is_active_user"]}',
-            '{mock_user["last_login"]}',
-            '{mock_user["date_joined"]}'
-        );
-        """
-    )
-    engine.execute(
-        f"""
-        INSERT INTO users (
-            id,
-            name,
-            email,
-            username,
-            password_hash,
-            secundary_id,
-            is_staff,
-            is_active_user,
-            last_login,
-            date_joined
-        )
-        VALUES (
-            '{mock_user["user_id"]}2',
-            '{mock_user["name"]}2',
-            '{mock_user["email"]}2',
-            '{mock_user["username"]}2',
-            '{mock_user["password_hash"]}2',
-            '{mock_user["secundary_id"]}2',
-            '{mock_user["is_staff"]}2',
-            '{mock_user["is_active_user"]}2',
-            '{mock_user["last_login"]}2',
-            '{mock_user["date_joined"]}2'
-        );
-        """
-    )
 
-    username1 = mock_user["username"]
-    username2 = f'{mock_user["username"]}2'
+    for index in range(0, 2):
+
+        engine.execute(
+            f"""
+            INSERT INTO users (
+                id,
+                name,
+                email,
+                username,
+                password_hash,
+                secundary_id,
+                is_staff,
+                is_active_user,
+                last_login,
+                date_joined
+            )
+            VALUES (
+                '{fake_user.id}{index}',
+                '{fake_user.name}{index}',
+                '{fake_user.email}{index}',
+                '{fake_user.username}{index}',
+                '{fake_user.password_hash}{index}',
+                '{fake_user.secundary_id}{index}',
+                '{fake_user.is_staff}{index}',
+                '{fake_user.is_active_user}{index}',
+                '{fake_user.last_login}{index}',
+                '{fake_user.date_joined}{index}'
+            );
+            """
+        )
+    username1 = f"{fake_user.username}0"
+    username2 = f"{fake_user.username}1"
 
     yield user_repository
 
