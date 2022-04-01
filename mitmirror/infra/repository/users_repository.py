@@ -214,7 +214,7 @@ class UserRepository(UserRepositoryInterface):
         :param is_staff: Se o usuario e ou nao o admin sistema.
         :param is_active_user: Se o usuario e esta ativo no sistema.
         :param date_joined: Data de cadastro do usuario no sistema.
-        :param kast_login: Data do ultimo login do usuario no sistema.
+        :param last_login: Data do ultimo login do usuario no sistema.
         :return: O usuario com seus dados atualizados.
         """
 
@@ -223,12 +223,28 @@ class UserRepository(UserRepositoryInterface):
             try:
 
                 user = database.session.query(UserModel).filter_by(id=user_id).one()
+
+                if not user:
+
+                    raise NoResultFound
+
+            except NoResultFound as error:
+
+                raise DefaultError(
+                    message="Usuario nao encontrado!", type_error=404
+                ) from error
+
+            try:
+
                 username_exist = (
                     database.session.query(UserModel).filter_by(username=username).one()
                 )
-                email_exist = (
-                    database.session.query(UserModel).filter_by(email=email).one()
-                )
+
+                if username_exist and user.name != name:
+
+                    raise DefaultError(
+                        message="Nome de usuario indisponivel", type_error=400
+                    )
 
             except NoResultFound:
 
@@ -240,31 +256,42 @@ class UserRepository(UserRepositoryInterface):
 
             try:
 
-                if not user:
-
-                    raise DefaultError(
-                        message="Usuario nao encontrado!", type_error=404
-                    )
-
-                if username_exist and user.username != name:
-
-                    raise DefaultError(message="Nome indisponivel", type_error=400)
+                email_exist = (
+                    database.session.query(UserModel).filter_by(email=email).one()
+                )
 
                 if email_exist and user.email != email:
 
                     raise DefaultError(message="Email indisponivel", type_error=400)
 
-                user.name = name
-                if email:
+            except NoResultFound:
+
+                pass
+
+            except Exception as error:
+
+                raise DefaultError(message=str(error)) from error
+
+            try:
+
+                if name is not None:
+                    user.name = name
+                if email is not None:
                     user.email = email
-                if username:
+                if username is not None:
                     user.username = username
-                user.password_hash = password_hash
-                user.secundary_id = secundary_id
-                user.is_staff = is_staff
-                user.is_active_user = is_active_user
-                user.date_joined = date_joined
-                user.last_login = last_login
+                if password_hash is not None:
+                    user.password_hash = password_hash
+                if secundary_id is not None:
+                    user.secundary_id = secundary_id
+                if is_staff is not None:
+                    user.is_staff = is_staff
+                if is_active_user is not None:
+                    user.is_active_user = is_active_user
+                if date_joined is not None:
+                    user.date_joined = date_joined
+                if last_login is not None:
+                    user.last_login = last_login
 
                 database.session.commit()
 
@@ -281,7 +308,7 @@ class UserRepository(UserRepositoryInterface):
                     last_login=user.last_login,
                 )
 
-            except Exception:  # pylint: disable=W0703
+            except Exception as error:  # pylint: disable=W0703
 
                 try:
 
@@ -290,6 +317,8 @@ class UserRepository(UserRepositoryInterface):
                 except Exception:  # pylint: disable=W0703
 
                     pass
+
+                raise DefaultError(message=str(error)) from error
 
             finally:
 

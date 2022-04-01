@@ -10,7 +10,7 @@ database = DataBaseConnectionHandler(database_infos["connection_string"])
 user = mock_user()
 
 
-@fixture(scope="session")
+@fixture(scope="module")
 def fake_user():
     """Mock de usuario"""
 
@@ -39,10 +39,13 @@ def user_repository_with_delete_user(
 
 
 @fixture
-def user_repository_with_one_user_registered(
+def user_repository_with_one_user_registered_and_delete_user(
     user_repository, fake_user
 ):  # pylint: disable=W0621
-    """Fixture para montar o objeto UserRepository com usuario registrado"""
+    """
+    Fixture para montar o objeto UserRepository com usuario registrado,
+    E deleta o usuario no final do teste.
+    """
 
     engine = database.get_engine()
     engine.execute(
@@ -74,16 +77,14 @@ def user_repository_with_one_user_registered(
         """
     )
 
-    username = fake_user.username
-
     yield user_repository
 
     engine = database.get_engine()
-    engine.execute(f"DELETE FROM users WHERE username='{username}';")
+    engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
 
 
 @fixture
-def user_repository_with_two_users_registered(
+def user_repository_with_two_users_registered_and_delete_user(
     user_repository, fake_user
 ):  # pylint: disable=W0621
     """Fixture para montar o objeto UserRepository com usuarios registrados"""
@@ -107,24 +108,22 @@ def user_repository_with_two_users_registered(
                 date_joined
             )
             VALUES (
-                '{fake_user.id}{index}',
+                '{int(fake_user.id + index)}',
                 '{fake_user.name}{index}',
                 '{fake_user.email}{index}',
                 '{fake_user.username}{index}',
                 '{fake_user.password_hash}{index}',
                 '{fake_user.secundary_id}{index}',
-                '{fake_user.is_staff}{index}',
-                '{fake_user.is_active_user}{index}',
-                '{fake_user.last_login}{index}',
-                '{fake_user.date_joined}{index}'
+                '{fake_user.is_staff}',
+                '{fake_user.is_active_user}',
+                '{fake_user.last_login}',
+                '{fake_user.date_joined}'
             );
             """
         )
-    username1 = f"{fake_user.username}0"
-    username2 = f"{fake_user.username}1"
 
     yield user_repository
 
     engine = database.get_engine()
-    engine.execute(f"DELETE FROM users WHERE username='{username1}';")
-    engine.execute(f"DELETE FROM users WHERE username='{username2}';")
+    engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
+    engine.execute(f"DELETE FROM users WHERE id='{fake_user.id + 1}';")

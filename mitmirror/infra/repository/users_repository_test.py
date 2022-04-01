@@ -78,14 +78,18 @@ def test_insert_user_missing_one_of_the_params(
     [(user.id, None, None), (None, user.username, None), (None, None, user.email)],
 )
 def test_get_user(
-    user_repository_with_one_user_registered, fake_user, user_id, username, email
+    user_repository_with_one_user_registered_and_delete_user,
+    fake_user,
+    user_id,
+    username,
+    email,
 ):
     """
     Testando o metodo get_user, buscando pelo id, username e email.
     Deve retornar um objeto do tipo User com todas as infomacoes do usuario.
     """
 
-    response = user_repository_with_one_user_registered.get_user(
+    response = user_repository_with_one_user_registered_and_delete_user.get_user(
         user_id=user_id, username=username, email=email
     )
 
@@ -134,13 +138,13 @@ def test_get_user_without_params(user_repository):
     assert "error" in str(error.value)
 
 
-def test_get_users(user_repository_with_two_users_registered):
+def test_get_users(user_repository_with_two_users_registered_and_delete_user):
     """
     Testando o metodo get_usesr.
     Deve uma lista com todos os usuarios cadastrados.
     """
 
-    response = user_repository_with_two_users_registered.get_users()
+    response = user_repository_with_two_users_registered_and_delete_user.get_users()
     engine = database.get_engine()
     query_user = engine.execute("SELECT * FROM users;").fetchall()
 
@@ -164,3 +168,83 @@ def test_get_users_with_no_results_found(user_repository):
 
     # Testando se o retorno e uma lista vazia.
     assert response == []
+
+
+def test_update_user(
+    user_repository_with_one_user_registered_and_delete_user, fake_user
+):
+    """
+    Testando o metodo update_user.
+    Deve retornar um objeto do tipo User com os mesmos parametros enviados.
+    """
+
+    engine = database.get_engine()
+    query_user = engine.execute(
+        f"""SELECT * FROM users WHERE id='{fake_user.id}';"""
+    ).fetchone()
+
+    response = user_repository_with_one_user_registered_and_delete_user.update_user(
+        user_id=fake_user.id,
+        name=f"{fake_user.name}2",
+        email=f"{fake_user.email}2",
+        username=f"{fake_user.username}2",
+        is_staff=True,
+        is_active_user=True,
+    )
+
+    # Testando se as informacoes enviadas pelo metodo estao no db.
+    assert isinstance(response, User)
+    assert response.id == query_user.id
+    assert response.name != query_user.name
+    assert response.email != query_user.email
+    assert response.username != query_user.username
+
+
+def test_update_user_with_no_results_found(user_repository, fake_user):
+    """
+    Testando o metodo update_user onde o id do usuario nao e encontrado no db.
+    Deve retornar um DefaultError.
+    """
+    with raises(DefaultError) as error:
+
+        user_repository.update_user(
+            user_id=fake_user.id,
+            name=f"{fake_user.name}2",
+            email=f"{fake_user.email}2",
+            username=f"{fake_user.username}2",
+            is_staff=True,
+            is_active_user=True,
+        )
+    assert "Usuario nao encontrado!" in str(error.value)
+
+
+@mark.parametrize(
+    "user_id,username,email",
+    [
+        (user.id, f"{user.username}1", user.email),
+        (user.id, user.username, f"{user.email}1"),
+    ],
+)
+def test_update_user_with_username_or_email_unavailable(
+    user_repository_with_two_users_registered_and_delete_user,
+    fake_user,
+    user_id,
+    username,
+    email,
+):
+    """
+    Testando o metodo update_user onde novo nome de usuario ou email esta indisponivel.
+    Deve retornar um DefaultError.
+    """
+    with raises(DefaultError) as error:
+
+        user_repository_with_two_users_registered_and_delete_user.update_user(
+            user_id=user_id,
+            name=f"{fake_user.name}2",
+            email=email,
+            username=username,
+            is_staff=True,
+            is_active_user=True,
+        )
+
+    assert "indisponivel" in str(error.value)
