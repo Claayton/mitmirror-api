@@ -248,3 +248,37 @@ def test_update_user_with_username_or_email_unavailable(
         )
 
     assert "indisponivel" in str(error.value)
+
+
+def test_delete_user(
+    user_repository_with_one_user_registered_and_delete_user, fake_user
+):
+    """
+    Testando o metodo delete_user.
+    Deve retornar um objeto do tipo User com as informacoes do usuario deletado.
+    """
+
+    response = user_repository_with_one_user_registered_and_delete_user.delete_user(
+        fake_user.id
+    )
+
+    engine = database.get_engine()
+    query_user = engine.execute(
+        f"""SELECT * FROM users WHERE id='{fake_user.id}';"""
+    ).fetchone()
+
+    assert isinstance(response, User)
+    assert response.id == fake_user.id
+    assert query_user is None
+
+
+def test_delete_user_with_no_results_found(user_repository, fake_user):
+    """
+    Testando o metodo update_user onde o id do usuario nao e encontrado no db.
+    Deve retornar um DefaultError.
+    """
+    with raises(DefaultError) as error:
+
+        user_repository.delete_user(user_id=fake_user.id)
+
+    assert "Usuario nao encontrado!" in str(error.value)

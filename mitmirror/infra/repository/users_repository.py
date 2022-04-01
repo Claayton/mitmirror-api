@@ -343,6 +343,10 @@ class UserRepository(UserRepositoryInterface):
 
                 user = database.session.query(UserModel).filter_by(id=user_id).one()
 
+                if not user:
+
+                    raise NoResultFound
+
             except NoResultFound as error:
 
                 raise DefaultError(
@@ -350,16 +354,22 @@ class UserRepository(UserRepositoryInterface):
                 ) from error
 
             try:
-                if not user:
-
-                    raise DefaultError(
-                        message="Usuario nao encontrado!", type_error=404
-                    )
 
                 database.session.delete(user)
                 database.session.commit()
 
-                return user
+                return User(
+                    id=user.id,
+                    name=user.name,
+                    email=user.email,
+                    username=user.username,
+                    password_hash=user.password_hash,
+                    secundary_id=user.secundary_id,
+                    is_staff=user.is_staff,
+                    is_active_user=user.is_active_user,
+                    date_joined=user.date_joined,
+                    last_login=user.last_login,
+                )
 
             except Exception as error:
 
