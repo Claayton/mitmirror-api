@@ -23,7 +23,7 @@ def test_by_id(get_user_with_spy, user_repository_spy, fake_user):
 def test_by_id_error(get_user_with_spy, user_repository_spy, fake_user):
     """
     Testando o erro metodo by_id.
-    Utilizando um malor invalido para o parametro user_id.
+    Utilizando um valor invalido para o parametro user_id.
     Deve retornar uma mensagem negativa de sucesso e None.
     """
 

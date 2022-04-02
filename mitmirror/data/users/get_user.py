@@ -1,4 +1,4 @@
-"""Caso de uso Getuser"""
+"""Caso de uso GetUser"""
 from typing import Type, Dict
 from mitmirror.data.interfaces import UserRepositoryInterface
 from mitmirror.domain.models import User

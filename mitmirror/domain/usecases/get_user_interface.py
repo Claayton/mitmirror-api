@@ -5,7 +5,7 @@ from mitmirror.domain.models import User
 
 
 class GetUserInterface(ABC):
-    """Interface para GetrUser"""
+    """Interface para GetUser"""
 
     @abstractmethod
     def by_id(self, user_id: int) -> Dict[bool, User]:
