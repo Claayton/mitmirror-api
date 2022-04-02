@@ -1,3 +1,4 @@
+"""Configuracoes de email"""
 import os
 from dotenv import load_dotenv
 

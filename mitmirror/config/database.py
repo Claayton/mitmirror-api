@@ -1,3 +1,4 @@
+""""Configuracoes de banco de dados"""
 import os
 from dotenv import load_dotenv
 

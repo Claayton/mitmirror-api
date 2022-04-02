@@ -1,4 +1,5 @@
-from config.database import database_infos
+"""Configuracoes de testes"""
+from .database import database_infos
 
 JSONIFY_PRETTYPRINT_REGULAR = True
 
