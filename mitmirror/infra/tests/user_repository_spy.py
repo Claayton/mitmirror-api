@@ -14,6 +14,7 @@ class UserRepositorySpy(UserRepositoryInterface):
         self.insert_user_params = {}
         self.get_user_params = {}
         self.update_user_params = {}
+        self.delete_user_params = {}
 
     def insert_user(
         self,
@@ -86,6 +87,8 @@ class UserRepositorySpy(UserRepositoryInterface):
         return mock_user()
 
     def delete_user(self, user_id: int) -> User:
-        """Deve ser implementado"""
+        """Spy para delete_user"""
 
-        pass
+        self.delete_user_params["user_id"] = user_id
+
+        return mock_user()
