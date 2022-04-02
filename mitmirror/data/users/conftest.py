@@ -8,6 +8,7 @@ from mitmirror.config import database_infos
 from .register_user import RegisterUser
 from .get_user import GetUser
 from .get_users import GetUsers
+from .update_user import UpdateUser
 
 
 database = DataBaseConnectionHandler(database_infos["connection_string"])
@@ -68,3 +69,10 @@ def get_users_with_spy(user_repository_spy):  # pylint: disable=W0621
     """Fixture para montar o objeto Getusers"""
 
     return GetUsers(user_repository_spy)
+
+
+@fixture
+def update_user(user_repository_spy):  # pylint: disable=W0621
+    """Fixture para montar o objeto Updateusers"""
+
+    return UpdateUser(user_repository_spy)
