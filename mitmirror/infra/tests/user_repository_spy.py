@@ -12,6 +12,7 @@ class UserRepositorySpy(UserRepositoryInterface):
     def __init__(self) -> None:
 
         self.insert_user_params = {}
+        self.get_user_params = {}
 
     def insert_user(
         self,
@@ -42,8 +43,13 @@ class UserRepositorySpy(UserRepositoryInterface):
     def get_user(
         self, user_id: int = None, username: str = None, email: str = None
     ) -> User:
-        """Deve ser implementado"""
-        pass
+        """Spy para get_user"""
+
+        self.get_user_params["user_id"] = user_id
+        self.get_user_params["email"] = email
+        self.get_user_params["username"] = username
+
+        return mock_user()
 
     def get_users(self) -> List[User]:
         """Deve ser implementado"""
