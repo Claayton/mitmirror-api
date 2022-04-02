@@ -52,8 +52,9 @@ class UserRepositorySpy(UserRepositoryInterface):
         return mock_user()
 
     def get_users(self) -> List[User]:
-        """Deve ser implementado"""
-        pass
+        """Spy para get_users"""
+
+        return [mock_user(), mock_user()]
 
     def update_user(
         self,
