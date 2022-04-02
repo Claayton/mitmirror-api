@@ -2,7 +2,7 @@
 from typing import Type, Dict
 from datetime import datetime
 from mitmirror.data.interfaces import UserRepositoryInterface
-from mitmirror.domain.usecases import UpdateUserInterface
+from mitmirror.domain.usecases import UpdateUserInterface, PasswordHashInterface
 from mitmirror.domain.models import User
 from mitmirror.errors import DefaultError
 
@@ -10,9 +10,14 @@ from mitmirror.errors import DefaultError
 class UpdateUser(UpdateUserInterface):
     """Classe responsavel pela atualizacao de dados de usuarios"""
 
-    def __init__(self, user_repository: Type[UserRepositoryInterface]) -> None:
+    def __init__(
+        self,
+        user_repository: Type[UserRepositoryInterface],
+        password_hash: Type[PasswordHashInterface]
+    ) -> None:
 
         self.__user_repository = user_repository
+        self.__password_hash = password_hash
 
     def update(
         self,
@@ -20,7 +25,7 @@ class UpdateUser(UpdateUserInterface):
         name: str = None,
         email: str = None,
         username: str = None,
-        password_hash: any = None,
+        password: any = None,
         secundary_id: int = None,
         is_staff: bool = None,
         is_active_user: bool = None,
@@ -33,7 +38,7 @@ class UpdateUser(UpdateUserInterface):
         :param name: Nome do usuario.
         :param email: Email do usuario.
         :param username: Nome de usuario unico para cada um.
-        :param password_hash: hash da senha do usuario.
+        :param password: Senha do usuario.
         :param secundary_id: Numero secundario de identificacao do usuario.
         :param is_staff: Se o usuario e ou nao o admin sistema.
         :param is_active_user: Se o usuario e esta ativo no sistema.
@@ -42,15 +47,16 @@ class UpdateUser(UpdateUserInterface):
         :return: Uma mensagem de sucesso e o usuario com seus dados atualizados.
         """
 
+        password_hash = self.__password_hash.hash(password)
+
         try:
 
-            # Falta password_hash
             user_update = self.__user_repository.update_user(
                 user_id=user_id,
                 name=name,
                 email=email,
                 username=username,
-                password_hash=password_hash,
+                password_hash=password_hash.decode(),
                 secundary_id=secundary_id,
                 is_staff=is_staff,
                 is_active_user=is_active_user,

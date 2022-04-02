@@ -13,7 +13,7 @@ def test_update(fake_user, user_repository_spy, update_user):
         name=f"{fake_user.name}2",
         email="mudeideemail@hotmail.com",
         username=f"{fake_user.username}vida_bandida",
-        password_hash="mudar123senhaforte",
+        password="mudar123senhaforte",
         is_staff=True,
         is_active_user=True,
     )

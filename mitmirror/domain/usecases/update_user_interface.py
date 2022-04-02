@@ -15,7 +15,7 @@ class UpdateUserInterface(ABC):
         name: str = None,
         email: str = None,
         username: str = None,
-        password_hash: any = None,
+        password: any = None,
         secundary_id: int = None,
         is_staff: bool = None,
         is_active_user: bool = None,
