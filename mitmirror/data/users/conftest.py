@@ -4,12 +4,12 @@ from mitmirror.infra.tests import UserRepositorySpy
 from mitmirror.infra.tests import mock_user
 from mitmirror.infra.config import DataBaseConnectionHandler
 from mitmirror.infra.repository import UserRepository
-from mitmirror.config import database_infos
+from mitmirror.config import CONNECTION_STRING_TEST
 from mitmirror.data.security import PasswordHash
 from . import RegisterUser, GetUser, GetUsers, UpdateUser, DeleteUser
 
 
-database = DataBaseConnectionHandler(database_infos["connection_string"])
+database = DataBaseConnectionHandler(CONNECTION_STRING_TEST)
 user = mock_user()
 
 
@@ -24,7 +24,7 @@ def fake_user():
 def user_repository():
     """repositorio padrao"""
 
-    return UserRepository(database_infos["connection_string"])
+    return UserRepository(CONNECTION_STRING_TEST)
 
 
 @fixture

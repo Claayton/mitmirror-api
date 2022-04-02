@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 database_infos = {
-    "connection_string": os.getenv("CONNECTION_STRING"),
+    "connection_string_test": os.getenv("CONNECTION_STRING_TEST"),
     "name_db": os.getenv("DATABASE_HEROKU"),
     "username": os.getenv("MYSQL_USERNAME_HEROKU"),
     "password": os.getenv("MYSQL_PASSWORD_HEROKU"),

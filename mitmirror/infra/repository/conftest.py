@@ -1,12 +1,12 @@
 """Arquivo para fixtures"""
 from pytest import fixture
-from mitmirror.config import database_infos
+from mitmirror.config import CONNECTION_STRING_TEST
 from . import UserRepository
 from ..tests import mock_user
 from ..config import DataBaseConnectionHandler
 
 
-database = DataBaseConnectionHandler(database_infos["connection_string"])
+database = DataBaseConnectionHandler(CONNECTION_STRING_TEST)
 user = mock_user()
 
 
@@ -21,7 +21,7 @@ def fake_user():
 def user_repository():  # pylint: disable=W0621
     """Fixture para montar o objeto UserRepository"""
 
-    return UserRepository(database_infos["connection_string"])
+    return UserRepository(CONNECTION_STRING_TEST)
 
 
 @fixture
