@@ -2,9 +2,14 @@
 from pytest import fixture
 from mitmirror.infra.tests import UserRepositorySpy
 from mitmirror.infra.tests import mock_user
+from mitmirror.infra.config import DataBaseConnectionHandler
+from mitmirror.infra.repository import UserRepository
+from mitmirror.config import database_infos
 from .register_user import RegisterUser
+from .get_user import GetUser
 
 
+database = DataBaseConnectionHandler(database_infos["connection_string"])
 user = mock_user()
 
 
@@ -13,6 +18,13 @@ def fake_user():
     """Mock de usuario"""
 
     return user
+
+
+@fixture
+def user_repository():
+    """repositorio padrao"""
+
+    return UserRepository(database_infos["connection_string"])
 
 
 @fixture
@@ -27,3 +39,17 @@ def register_user(user_repository_spy):  # pylint: disable=W0621
     """Fixture para montar o objeto RegisterUser"""
 
     return RegisterUser(user_repository_spy)
+
+
+@fixture
+def get_user(user_repository):  # pylint: disable=W0621
+    """Fixture para montar o objeto GetUser"""
+
+    return GetUser(user_repository)
+
+
+@fixture
+def get_user_with_spy(user_repository_spy):  # pylint: disable=W0621
+    """Fixture para montar o objeto Getuser"""
+
+    yield GetUser(user_repository_spy)
