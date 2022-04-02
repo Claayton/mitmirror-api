@@ -5,11 +5,8 @@ from mitmirror.infra.tests import mock_user
 from mitmirror.infra.config import DataBaseConnectionHandler
 from mitmirror.infra.repository import UserRepository
 from mitmirror.config import database_infos
-from .register_user import RegisterUser
-from .get_user import GetUser
-from .get_users import GetUsers
-from .update_user import UpdateUser
-from .delete_user import DeleteUser
+from mitmirror.data.security import PasswordHash
+from . import RegisterUser, GetUser, GetUsers, UpdateUser, DeleteUser
 
 
 database = DataBaseConnectionHandler(database_infos["connection_string"])
@@ -41,7 +38,7 @@ def user_repository_spy():
 def register_user(user_repository_spy):  # pylint: disable=W0621
     """Fixture para montar o objeto RegisterUser"""
 
-    return RegisterUser(user_repository_spy)
+    return RegisterUser(user_repository_spy, PasswordHash)
 
 
 @fixture
@@ -76,7 +73,7 @@ def get_users_with_spy(user_repository_spy):  # pylint: disable=W0621
 def update_user(user_repository_spy):  # pylint: disable=W0621
     """Fixture para montar o objeto UpdateUser"""
 
-    return UpdateUser(user_repository_spy)
+    return UpdateUser(user_repository_spy, PasswordHash)
 
 
 @fixture

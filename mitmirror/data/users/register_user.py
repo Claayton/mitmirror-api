@@ -1,7 +1,7 @@
 """Caso de uso RegisterUser"""
 from typing import Type, Dict
 from mitmirror.data.interfaces import UserRepositoryInterface
-from mitmirror.domain.usecases import RegisterUserInterface
+from mitmirror.domain.usecases import RegisterUserInterface, PasswordHashInterface
 from mitmirror.domain.models import User
 from mitmirror.errors import DefaultError
 
@@ -9,9 +9,14 @@ from mitmirror.errors import DefaultError
 class RegisterUser(RegisterUserInterface):
     """Classe responsavel pelo registro de novos usuarios no sistema"""
 
-    def __init__(self, user_repository: Type[UserRepositoryInterface]) -> None:
+    def __init__(
+        self,
+        user_repository: Type[UserRepositoryInterface],
+        password_hash: Type[PasswordHashInterface],
+    ) -> None:
 
         self.__user_repository = user_repository
+        self.__password_hash = password_hash
 
     def register(
         self, name: str, email: str, username: str, password: any
@@ -33,9 +38,13 @@ class RegisterUser(RegisterUserInterface):
 
         if validate_entry:
 
-            # Falta password_hash
+            password_hash = self.__password_hash.hash(password)
+
             user_insertion = self.__user_repository.insert_user(
-                name=name, email=email, username=username, password_hash=password
+                name=name,
+                email=email,
+                username=username,
+                password_hash=password_hash.decode(),
             )
 
             return {
