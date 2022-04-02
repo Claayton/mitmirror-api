@@ -13,6 +13,7 @@ class UserRepositorySpy(UserRepositoryInterface):
 
         self.insert_user_params = {}
         self.get_user_params = {}
+        self.update_user_params = {}
 
     def insert_user(
         self,
@@ -69,9 +70,20 @@ class UserRepositorySpy(UserRepositoryInterface):
         date_joined: Type[datetime] = None,
         last_login: Type[datetime] = None,
     ) -> User:
-        """Deve ser implementado"""
+        """Spy para update_user"""
 
-        pass
+        self.update_user_params["user_id"] = user_id
+        self.update_user_params["name"] = name
+        self.update_user_params["email"] = email
+        self.update_user_params["username"] = username
+        self.update_user_params["password_hash"] = password_hash
+        self.update_user_params["secundary_id"] = secundary_id
+        self.update_user_params["is_staff"] = is_staff
+        self.update_user_params["is_active_user"] = is_active_user
+        self.update_user_params["date_joined"] = date_joined
+        self.update_user_params["last_login"] = last_login
+
+        return mock_user()
 
     def delete_user(self, user_id: int) -> User:
         """Deve ser implementado"""
