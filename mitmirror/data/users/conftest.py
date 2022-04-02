@@ -9,6 +9,7 @@ from .register_user import RegisterUser
 from .get_user import GetUser
 from .get_users import GetUsers
 from .update_user import UpdateUser
+from .delete_user import DeleteUser
 
 
 database = DataBaseConnectionHandler(database_infos["connection_string"])
@@ -73,6 +74,20 @@ def get_users_with_spy(user_repository_spy):  # pylint: disable=W0621
 
 @fixture
 def update_user(user_repository_spy):  # pylint: disable=W0621
-    """Fixture para montar o objeto Updateusers"""
+    """Fixture para montar o objeto UpdateUser"""
 
     return UpdateUser(user_repository_spy)
+
+
+@fixture
+def delete_user_with_spy(user_repository_spy):  # pylint: disable=W0621
+    """Fixture para montar o objeto DeleteUser"""
+
+    return DeleteUser(user_repository_spy)
+
+
+@fixture
+def delete_user(user_repository):  # pylint: disable=W0621
+    """Fixture para montar o objeto DeleteUser"""
+
+    return DeleteUser(user_repository)
