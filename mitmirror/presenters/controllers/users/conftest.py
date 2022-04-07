@@ -49,3 +49,23 @@ def get_user_controller_with_spy(user_repository_spy):  # pylint: disable=W0621
     controller = GetUserController(usecase)
 
     return controller
+
+
+@fixture
+def get_users_controller(user_repository):  # pylint: disable=W0621
+    """montagem de get_users_controller"""
+
+    usecase = GetUsers(user_repository)
+    controller = GetUsersController(usecase)
+
+    return controller
+
+
+@fixture
+def get_users_controller_with_spy(user_repository_spy):  # pylint: disable=W0621
+    """montagem de get_users_controller utilizando o spy"""
+
+    usecase = GetUsers(user_repository_spy)
+    controller = GetUsersController(usecase)
+
+    return controller
