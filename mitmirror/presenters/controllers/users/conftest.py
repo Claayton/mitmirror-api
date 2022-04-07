@@ -2,10 +2,15 @@
 from pytest import fixture
 from mitmirror.infra.repository import UserRepository
 from mitmirror.infra.tests import UserRepositorySpy, mock_user
-from mitmirror.data.users import GetUser, GetUsers, RegisterUser
+from mitmirror.data.users import GetUser, GetUsers, RegisterUser, UpdateUser
 from mitmirror.data.security import PasswordHash
 from mitmirror.config import CONNECTION_STRING_TEST
-from . import GetUserController, GetUsersController, RegisterUserController
+from . import (
+    GetUserController,
+    GetUsersController,
+    RegisterUserController,
+    UpdateUserController,
+)
 
 
 user = mock_user()
@@ -74,9 +79,29 @@ def get_users_controller_with_spy(user_repository_spy):  # pylint: disable=W0621
 
 @fixture
 def register_user_with_spy(user_repository_spy):  # pylint: disable=W0621
-    """montagem de register-user_controller utilizando spy"""
+    """montagem de register_user_controller utilizando spy"""
 
     usecase = RegisterUser(user_repository_spy, PasswordHash())
     controller = RegisterUserController(usecase)
+
+    return controller
+
+
+@fixture
+def update_user(user_repository):  # pylint: disable=W0621
+    """montagem de update_user_controller"""
+
+    usecase = UpdateUser(user_repository, PasswordHash())
+    controller = UpdateUserController(usecase)
+
+    return controller
+
+
+@fixture
+def update_user_with_spy(user_repository_spy):  # pylint: disable=W0621
+    """montagem de update_user_controller utilizando spy"""
+
+    usecase = UpdateUser(user_repository_spy, PasswordHash())
+    controller = UpdateUserController(usecase)
 
     return controller
