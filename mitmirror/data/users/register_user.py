@@ -53,8 +53,8 @@ class RegisterUser(RegisterUserInterface):
             }
 
         raise DefaultError(
-            "Esta requisicao necessita dos parametros: name, email, username, password",
             400,
+            "Esta requisicao necessita dos parametros: name, email, username, password",
         )
 
     @classmethod
