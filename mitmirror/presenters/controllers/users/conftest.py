@@ -2,9 +2,10 @@
 from pytest import fixture
 from mitmirror.infra.repository import UserRepository
 from mitmirror.infra.tests import UserRepositorySpy, mock_user
-from mitmirror.data.users import GetUser, GetUsers
+from mitmirror.data.users import GetUser, GetUsers, RegisterUser
+from mitmirror.data.security import PasswordHash
 from mitmirror.config import CONNECTION_STRING_TEST
-from . import GetUserController, GetUsersController
+from . import GetUserController, GetUsersController, RegisterUserController
 
 
 user = mock_user()
@@ -63,9 +64,19 @@ def get_users_controller(user_repository):  # pylint: disable=W0621
 
 @fixture
 def get_users_controller_with_spy(user_repository_spy):  # pylint: disable=W0621
-    """montagem de get_users_controller utilizando o spy"""
+    """Montagem de get_users_controller utilizando o spy"""
 
     usecase = GetUsers(user_repository_spy)
     controller = GetUsersController(usecase)
+
+    return controller
+
+
+@fixture
+def register_user_with_spy(user_repository_spy):  # pylint: disable=W0621
+    """montagem de register-user_controller utilizando spy"""
+
+    usecase = RegisterUser(user_repository_spy, PasswordHash())
+    controller = RegisterUserController(usecase)
 
     return controller
