@@ -12,8 +12,8 @@ def mock_user():
     return User(
         id=fake.random_number(),
         name=fake.name(),
-        email=f"{fake.name()}@test.com",
-        username=f"{fake.name()}_vidaloka",
+        email=fake.email(),
+        username=fake.user_name(),
         password_hash=fake.pystr(),
         secundary_id=fake.random_number(),
         is_staff=False,
