@@ -13,7 +13,7 @@ class UpdateUser(UpdateUserInterface):
     def __init__(
         self,
         user_repository: Type[UserRepositoryInterface],
-        password_hash: Type[PasswordHashInterface]
+        password_hash: Type[PasswordHashInterface],
     ) -> None:
 
         self.__user_repository = user_repository
@@ -47,7 +47,13 @@ class UpdateUser(UpdateUserInterface):
         :return: Uma mensagem de sucesso e o usuario com seus dados atualizados.
         """
 
-        password_hash = self.__password_hash.hash(password)
+        if password:
+
+            password_hash = self.__password_hash.hash(password).decode()
+
+        else:
+
+            password_hash = None
 
         try:
 
@@ -56,7 +62,7 @@ class UpdateUser(UpdateUserInterface):
                 name=name,
                 email=email,
                 username=username,
-                password_hash=password_hash.decode(),
+                password_hash=password_hash,
                 secundary_id=secundary_id,
                 is_staff=is_staff,
                 is_active_user=is_active_user,
@@ -68,6 +74,10 @@ class UpdateUser(UpdateUserInterface):
                 "success": True,
                 "data": self.__format_response(user_update),
             }
+
+        except DefaultError as error:
+
+            raise error
 
         except Exception as error:
 
