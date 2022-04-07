@@ -8,7 +8,9 @@ class ControllerInterface(ABC):
     """Interface Padrão para controllers"""
 
     @abstractmethod
-    def handler(self, http_request: Type[HttpRequest]) -> HttpResponse:
+    def handler(
+        self, param: any = None, http_request: Type[HttpRequest] = None
+    ) -> HttpResponse:
         """Methodo para facilitar o request"""
 
         raise Exception("Should implement handler method")

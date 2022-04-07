@@ -1,10 +1,15 @@
 """Controllers para GetUser"""
 from typing import Type
 from mitmirror.domain.models import User
-from mitmirror.errors import HttpBadRequestError, HttpNotFound
 from mitmirror.presenters.helpers import HttpRequest, HttpResponse
 from mitmirror.domain.usecases import GetUserInterface
 from mitmirror.presenters.interfaces import ControllerInterface
+from mitmirror.errors import (
+    HttpBadRequestError,
+    DefaultError,
+    HttpNotFound,
+    HttpUnprocessableEntity,
+)
 
 
 class GetUserController(ControllerInterface):
@@ -14,44 +19,47 @@ class GetUserController(ControllerInterface):
 
         self.__usecase = usecase
 
-    def handler(self, http_request: Type[HttpRequest]) -> HttpResponse:
+    def handler(
+        self, param: any = None, http_request: Type[HttpRequest] = None
+    ) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
         response = None
 
-        if http_request.query:
+        if not param:
 
-            query_string_params = http_request.query.keys()
+            raise HttpBadRequestError(
+                message="Essa requisiçao exige o seguinte parametro: <int:user_id>, error!"
+            )
 
-            if "user_id" in query_string_params:
+        try:
 
-                user_id = int(http_request.query["user_id"])
-                response = self.__usecase.by_id(user_id=user_id)
-
-            elif "email" in query_string_params:
-
-                email = http_request.query["email"]
-                response = self.__usecase.by_email(email=email)
-
-            elif "username" in query_string_params:
-
-                username = http_request.query["username"]
-                response = self.__usecase.by_username(username=username)
-
-            else:
-
-                raise HttpNotFound(
-                    message="Nenhum usuario com os requisitos dos parametros encontrado!"
-                )
+            user_id = int(param)
+            response = self.__usecase.by_id(user_id=user_id)
 
             formated_response = self.__format_response(response["data"])
 
             return formated_response
 
-        raise HttpBadRequestError(
-            message="Essa requisiçao exige um dos seguintes parametros: \
-'user_id: int', 'email: str', 'username: str'"
-        )
+        except ValueError as error:
+
+            raise HttpUnprocessableEntity(
+                message="O parametro <user_id> deve ser do tipo inteiro, error!"
+            ) from error
+
+        except DefaultError as error:
+
+            if error.type_error == 404:
+
+                raise HttpNotFound(
+                    message="Nenhum usuario com os requisitos dos parametros encontrado!, error!"
+                ) from error
+
+            raise error
+
+        except Exception as error:
+
+            raise error
 
     def __format_response(self, response_method: Type[User]) -> HttpResponse:
         """Formatando a resposta"""
