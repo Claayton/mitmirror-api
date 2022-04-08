@@ -1,5 +1,6 @@
 """Controllers para GetUsers"""
 from typing import Type, List
+from datetime import datetime
 from mitmirror.domain.models import User
 from mitmirror.errors import HttpNotFound, DefaultError
 from mitmirror.presenters.helpers import HttpRequest, HttpResponse
@@ -22,7 +23,6 @@ class GetUsersController(ControllerInterface):
         try:
 
             response = self.__usecase.all_users()
-
             formated_response = self.__format_response(response["data"])
 
             return formated_response
@@ -59,8 +59,8 @@ class GetUsersController(ControllerInterface):
                     "secundary_id": user.secundary_id,
                     "is_staff": user.is_staff,
                     "is_active_user": user.is_active_user,
-                    "last_login": user.last_login,
-                    "date_joined": user.date_joined,
+                    "last_login": datetime.isoformat(user.last_login),
+                    "date_joined": datetime.isoformat(user.date_joined),
                 }
             )
 
