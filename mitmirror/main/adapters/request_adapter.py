@@ -4,7 +4,9 @@ from fastapi import Request as RequestFastApi
 from mitmirror.presenters.helpers import HttpRequest
 
 
-async def request_adapter(request: RequestFastApi, callback: Callable):
+async def request_adapter(
+    request: RequestFastApi, callback: Callable, user_id: int = None
+):
     """Adaptador de requisicoes para FastApi"""
 
     body = None
@@ -18,5 +20,5 @@ async def request_adapter(request: RequestFastApi, callback: Callable):
         header=request.headers, body=body, query=request.query_params
     )
 
-    http_response = callback(http_request)
+    http_response = callback(user_id, http_request)
     return http_response
