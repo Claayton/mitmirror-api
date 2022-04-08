@@ -181,14 +181,26 @@ class UserRepository(UserRepositoryInterface):
 
             return []
 
-        except Exception as error:
+        except Exception as error:  # pylint: disable=W0703
 
-            database.session.rollback()
-            raise DefaultError(message=str(error)) from error
+            try:
+
+                database.session.rollback()
+                raise DefaultError(message=str(error)) from error
+
+            except Exception:  # pylint: disable=W0703
+
+                pass
 
         finally:
 
-            database.session.close()
+            try:
+
+                database.session.close()
+
+            except Exception:  # pylint: disable=W0703
+
+                pass
 
     def update_user(
         self,
