@@ -2,14 +2,15 @@
 from pytest import fixture
 from mitmirror.infra.repository import UserRepository
 from mitmirror.infra.tests import UserRepositorySpy, mock_user
-from mitmirror.data.users import GetUser, GetUsers, RegisterUser, UpdateUser
 from mitmirror.data.security import PasswordHash
 from mitmirror.config import CONNECTION_STRING_TEST
+from mitmirror.data.users import GetUser, GetUsers, RegisterUser, UpdateUser, DeleteUser
 from . import (
     GetUserController,
     GetUsersController,
     RegisterUserController,
     UpdateUserController,
+    DeleteUserController,
 )
 
 
@@ -103,5 +104,25 @@ def update_user_with_spy(user_repository_spy):  # pylint: disable=W0621
 
     usecase = UpdateUser(user_repository_spy, PasswordHash())
     controller = UpdateUserController(usecase)
+
+    return controller
+
+
+@fixture
+def delete_user(user_repository):  # pylint: disable=W0621
+    """montagem de delete_user_controller"""
+
+    usecase = DeleteUser(user_repository)
+    controller = DeleteUserController(usecase)
+
+    return controller
+
+
+@fixture
+def delete_user_with_spy(user_repository_spy):  # pylint: disable=W0621
+    """montagem de delete_user_controller utilizando spy"""
+
+    usecase = DeleteUser(user_repository_spy)
+    controller = DeleteUserController(usecase)
 
     return controller

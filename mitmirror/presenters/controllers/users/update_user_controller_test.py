@@ -1,4 +1,4 @@
-"""Testes para UpdateUsersController"""
+"""Testes para UpdateUserController"""
 from pytest import raises, mark
 from mitmirror.errors import HttpNotFound, HttpBadRequestError, HttpUnprocessableEntity
 from mitmirror.infra.tests import mock_user
