@@ -1,5 +1,6 @@
 """Controllers para GetUser"""
 from typing import Type
+from datetime import datetime
 from mitmirror.domain.models import User
 from mitmirror.presenters.helpers import HttpRequest, HttpResponse
 from mitmirror.domain.usecases import GetUserInterface
@@ -75,8 +76,8 @@ class GetUserController(ControllerInterface):
                 "secundary_id": response_method.secundary_id,
                 "is_staff": response_method.is_staff,
                 "is_active_user": response_method.is_active_user,
-                "last_login": response_method.last_login,
-                "date_joined": response_method.date_joined,
+                "last_login": datetime.isoformat(response_method.last_login),
+                "date_joined": datetime.isoformat(response_method.date_joined),
             },
         }
 
