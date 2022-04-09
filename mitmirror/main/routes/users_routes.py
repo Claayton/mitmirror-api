@@ -7,6 +7,7 @@ from mitmirror.main.composers.users import (
     get_users_composer,
     get_user_composer,
     register_user_composer,
+    update_user_composer,
 )
 
 users = APIRouter(prefix="/api/users", tags=["user"])
@@ -39,10 +40,9 @@ async def get_user(request: RequestFastApi, user_id: int):
     :return: Um usuario e informacoes do mesmo.
     """
 
-    response = None
-
     try:
 
+        response = None
         controller = get_user_composer()
         response = await request_adapter(request, controller.handler, user_id)
 
@@ -58,15 +58,37 @@ async def register_user(request: RequestFastApi):
     """
     Rota para registrar um novo usuario no sistema.
     Deve receber os seguintes body-parameters:
-    ('name: str', 'email: str', 'password: any').
+    ('name: str', 'email: str', 'username: str', 'password: any').
     """
-
-    response = None
 
     try:
 
+        response = None
         controller = register_user_composer()
         response = await request_adapter(request, controller.handler)
+
+    except Exception as error:  # pylint: disable=W0703
+
+        response = handler_errors(error)
+
+    return JSONResponse(status_code=response.status_code, content=response.body)
+
+
+@users.put("/{user_id:int}/")
+async def update_user(request: RequestFastApi, user_id: int):
+    """
+    Rota para dados de um usuario ja registrado no sistema.
+    Deve receber os body-parameters 'user_id' + um dos seguintes:
+    ('name: str', 'email: str', 'username: str', 'password: any').
+    :param user_id: ID do usuario para busca no db.
+    :return: Um usuario e informacoes do mesmo.
+    """
+
+    try:
+
+        response = None
+        controller = update_user_composer()
+        response = await request_adapter(request, controller.handler, user_id)
 
     except Exception as error:  # pylint: disable=W0703
 

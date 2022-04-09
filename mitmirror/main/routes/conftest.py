@@ -57,7 +57,7 @@ def client_with_one_user(fake_user):  # pylint: disable=W0621
 
     yield TestClient(users)
 
-    engine.execute(f"DELETE FROM users WHERE username='{fake_user.username}';")
+    engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
 
 
 @fixture
