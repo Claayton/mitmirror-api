@@ -55,8 +55,20 @@ def client_with_one_user(fake_user):  # pylint: disable=W0621
         """
     )
 
-    yield TestClient(users)
+    return TestClient(users)
 
+
+@fixture
+def client_with_one_user_and_delete(
+    client_with_one_user, fake_user
+):  # pylint: disable=W0621
+    """
+    Montando o client com um usuario cadastrado,
+    """
+
+    yield client_with_one_user
+
+    engine = data_base_connection_handler.get_engine()
     engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
 
 

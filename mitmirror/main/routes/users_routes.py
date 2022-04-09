@@ -8,6 +8,7 @@ from mitmirror.main.composers.users import (
     get_user_composer,
     register_user_composer,
     update_user_composer,
+    delete_user_composer,
 )
 
 users = APIRouter(prefix="/api/users", tags=["user"])
@@ -88,6 +89,27 @@ async def update_user(request: RequestFastApi, user_id: int):
 
         response = None
         controller = update_user_composer()
+        response = await request_adapter(request, controller.handler, user_id)
+
+    except Exception as error:  # pylint: disable=W0703
+
+        response = handler_errors(error)
+
+    return JSONResponse(status_code=response.status_code, content=response.body)
+
+
+@users.delete("/{user_id:int}/")
+async def delete_user(request: RequestFastApi, user_id: int):
+    """
+    Deleta um usuario que esteja cadastrado no banco de dados.
+    :param user_id: ID do usuario para busca no db.
+    :return: Um usuario e informacoes do mesmo.
+    """
+
+    try:
+
+        response = None
+        controller = delete_user_composer()
         response = await request_adapter(request, controller.handler, user_id)
 
     except Exception as error:  # pylint: disable=W0703
