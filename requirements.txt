@@ -1,5 +1,6 @@
 alembic==1.7.7
 anyio==3.5.0
+asgiref==3.5.0
 astroid==2.11.1
 attrs==21.4.0
 bcrypt==3.2.0
@@ -11,6 +12,7 @@ dill==0.3.4
 Faker==13.3.3
 fastapi==0.75.1
 greenlet==1.1.2
+h11==0.13.0
 idna==3.3
 iniconfig==1.1.1
 isort==5.10.1
@@ -39,6 +41,7 @@ starlette==0.17.1
 tomli==2.0.1
 typing_extensions==4.1.1
 urllib3==1.26.9
+uvicorn==0.17.6
 Werkzeug==2.0.3
 wrapt==1.14.0
 WTForms==3.0.1
