@@ -1,5 +1,6 @@
 """Controller para DeleteUser"""
 from typing import Type
+from datetime import datetime
 from mitmirror.errors import HttpBadRequestError, DefaultError
 from mitmirror.errors.http_error404 import HttpNotFound
 from mitmirror.errors.http_error422 import HttpUnprocessableEntity
@@ -70,8 +71,8 @@ class DeleteUserController(ControllerInterface):
                 "secundary_id": response_method.secundary_id,
                 "is_staff": response_method.is_staff,
                 "is_active_user": response_method.is_active_user,
-                "last_login": response_method.last_login,
-                "date_joined": response_method.date_joined,
+                "last_login": datetime.isoformat(response_method.last_login),
+                "date_joined": datetime.isoformat(response_method.date_joined),
             },
         }
 
