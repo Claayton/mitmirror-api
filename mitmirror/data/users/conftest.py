@@ -3,7 +3,6 @@ from pytest import fixture
 from mitmirror.infra.tests import UserRepositorySpy
 from mitmirror.infra.tests import mock_user
 from mitmirror.infra.config import DataBaseConnectionHandler
-from mitmirror.infra.config.create_database import create_tests_database
 from mitmirror.infra.repository import UserRepository
 from mitmirror.config import CONNECTION_STRING_TEST
 from mitmirror.data.security import PasswordHash
@@ -12,7 +11,6 @@ from . import RegisterUser, GetUser, GetUsers, UpdateUser, DeleteUser
 
 database = DataBaseConnectionHandler(CONNECTION_STRING_TEST)
 user = mock_user()
-create_tests_database()
 
 
 @fixture(scope="module")

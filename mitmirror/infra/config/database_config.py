@@ -1,6 +1,7 @@
 """Configuraçoes de conexao de banco de dados"""
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists, create_database
 
 
 class DataBaseConnectionHandler:
@@ -13,7 +14,12 @@ class DataBaseConnectionHandler:
     def get_engine(self):
         """Retorna uma conexao com o banco de dados"""
 
+        if not database_exists(self.__connection_string):
+
+            create_database(self.__connection_string)
+
         engine = create_engine(self.__connection_string)
+
         return engine
 
     def __enter__(self):
