@@ -3,12 +3,12 @@ from fastapi.testclient import TestClient
 from pytest import fixture
 from mitmirror.infra.tests import mock_user
 from mitmirror.infra.config import DataBaseConnectionHandler
-from mitmirror.config import CONNECTION_STRING_TEST
+from mitmirror.config import CONNECTION_STRING
 from .users_routes import users
 
 
 user = mock_user()
-data_base_connection_handler = DataBaseConnectionHandler(CONNECTION_STRING_TEST)
+data_base_connection_handler = DataBaseConnectionHandler(CONNECTION_STRING)
 
 
 @fixture(scope="module")
@@ -47,8 +47,8 @@ def client_with_one_user(fake_user):  # pylint: disable=W0621
             '{fake_user.username}',
             '{fake_user.password_hash}',
             '{fake_user.secundary_id}',
-            '{fake_user.is_staff}',
-            '{fake_user.is_active_user}',
+            {fake_user.is_staff},
+            {fake_user.is_active_user},
             '{fake_user.last_login}',
             '{fake_user.date_joined}'
         );

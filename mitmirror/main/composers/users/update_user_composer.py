@@ -5,11 +5,11 @@ from mitmirror.data.interfaces import UserRepositoryInterface
 from mitmirror.data.users import UpdateUser
 from mitmirror.data.security import PasswordHash
 from mitmirror.presenters.controllers.users import UpdateUserController
-from mitmirror.config import CONNECTION_STRING_TEST
+from mitmirror.config import CONNECTION_STRING
 
 
 def update_user_composer(
-    infra: Type[UserRepositoryInterface] = UserRepository(CONNECTION_STRING_TEST),
+    infra: Type[UserRepositoryInterface] = UserRepository(CONNECTION_STRING),
 ):
     """Montagem do caso de uso UpdateUser"""
 
