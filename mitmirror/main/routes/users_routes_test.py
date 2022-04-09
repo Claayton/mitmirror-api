@@ -27,3 +27,23 @@ def test_get_user(client_with_one_user, fake_user):
     assert isinstance(response.json()["data"], dict)
     assert "id" in response.json()["data"]
     assert "name" in response.json()["data"]
+
+
+def test_register_user(client_with_delete_user, fake_user):
+    """Testando a rota register_user"""
+
+    url = "/api/users/"
+    json = {
+        "name": fake_user.name,
+        "email": fake_user.email,
+        "username": fake_user.username,
+        "password": fake_user.password_hash,
+    }
+
+    response = client_with_delete_user.post(url=url, json=json)
+
+    assert response.status_code == 201
+    assert isinstance(response.json(), dict)
+    assert isinstance(response.json()["data"], dict)
+    assert "id" in response.json()["data"]
+    assert "name" in response.json()["data"]
