@@ -19,3 +19,4 @@ build/
 
 app/tests.sqlite3
 storage.db
+tests.db
