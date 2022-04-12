@@ -1,6 +1,8 @@
 """Rotas de usuarios"""
 from fastapi import APIRouter, Request as RequestFastApi
 from fastapi.responses import JSONResponse
+from mitmirror.main.routes.middleware import middleware_testing
+from mitmirror.config import CONNECTION_STRING_TEST
 from mitmirror.main.adapters import request_adapter
 from mitmirror.presenters.errors import handler_errors
 from mitmirror.main.composers.users import (
@@ -20,11 +22,19 @@ async def get_users(request: RequestFastApi):
     Rota para buscar todos os usuarios registrados no sistema.
     """
 
+    response = None
+
     try:
 
-        response = None
-        controller = get_users_composer()
-        response = await request_adapter(request, controller.handler)
+        if middleware_testing(request):
+
+            controller = get_users_composer(CONNECTION_STRING_TEST)
+            response = await request_adapter(request, controller.handler)
+
+        else:
+
+            controller = get_users_composer()
+            response = await request_adapter(request, controller.handler)
 
     except Exception as error:  # pylint: disable=W0703
 
@@ -41,11 +51,19 @@ async def get_user(request: RequestFastApi, user_id: int):
     :return: Um usuario e informacoes do mesmo.
     """
 
+    response = None
+
     try:
 
-        response = None
-        controller = get_user_composer()
-        response = await request_adapter(request, controller.handler, user_id)
+        if middleware_testing(request):
+
+            controller = get_user_composer(CONNECTION_STRING_TEST)
+            response = await request_adapter(request, controller.handler, user_id)
+
+        else:
+
+            controller = get_user_composer()
+            response = await request_adapter(request, controller.handler, user_id)
 
     except Exception as error:  # pylint: disable=W0703
 
@@ -62,11 +80,19 @@ async def register_user(request: RequestFastApi):
     ('name: str', 'email: str', 'username: str', 'password: any').
     """
 
+    response = None
+
     try:
 
-        response = None
-        controller = register_user_composer()
-        response = await request_adapter(request, controller.handler)
+        if middleware_testing(request):
+
+            controller = register_user_composer(CONNECTION_STRING_TEST)
+            response = await request_adapter(request, controller.handler)
+
+        else:
+
+            controller = register_user_composer()
+            response = await request_adapter(request, controller.handler)
 
     except Exception as error:  # pylint: disable=W0703
 
@@ -85,11 +111,19 @@ async def update_user(request: RequestFastApi, user_id: int):
     :return: Um usuario e informacoes do mesmo.
     """
 
+    response = None
+
     try:
 
-        response = None
-        controller = update_user_composer()
-        response = await request_adapter(request, controller.handler, user_id)
+        if middleware_testing(request):
+
+            controller = update_user_composer(CONNECTION_STRING_TEST)
+            response = await request_adapter(request, controller.handler, user_id)
+
+        else:
+
+            controller = update_user_composer()
+            response = await request_adapter(request, controller.handler, user_id)
 
     except Exception as error:  # pylint: disable=W0703
 
@@ -106,11 +140,19 @@ async def delete_user(request: RequestFastApi, user_id: int):
     :return: Um usuario e informacoes do mesmo.
     """
 
+    response = None
+
     try:
 
-        response = None
-        controller = delete_user_composer()
-        response = await request_adapter(request, controller.handler, user_id)
+        if middleware_testing(request):
+
+            controller = delete_user_composer(CONNECTION_STRING_TEST)
+            response = await request_adapter(request, controller.handler, user_id)
+
+        else:
+
+            controller = delete_user_composer()
+            response = await request_adapter(request, controller.handler, user_id)
 
     except Exception as error:  # pylint: disable=W0703
 
