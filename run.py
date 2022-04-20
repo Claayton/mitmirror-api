@@ -15,7 +15,7 @@ if __name__ == "__main__":
     uvicorn.run(
         app="mitmirror.main.config.http_server_configs:create_app",
         host="0.0.0.0",
-        port=6000,
+        port=8080,
         reload=True,
         debug=True,
         factory=True,

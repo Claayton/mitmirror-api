@@ -31,7 +31,7 @@ services:
       dockerfile: ./docker/api/Dockerfile
     restart: always
     ports:
-     - 6000:6000
+     - 8080:8080
     networks:
       - mitmirror
     depends_on:

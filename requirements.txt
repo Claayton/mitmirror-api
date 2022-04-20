@@ -39,6 +39,7 @@ py==1.11.0
 pycparser==2.21
 pydantic==1.9.0
 Pygments==2.11.2
+PyJWT==2.3.0
 pylint==2.13.5
 PyMySQL==1.0.2
 pyparsing==3.0.7
