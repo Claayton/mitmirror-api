@@ -13,8 +13,8 @@ def test_authentication():
 
     infra = UserRepositorySpy()
     get_user = GetUser(infra)
-    hash_password = PasswordHashSpy()
-    authentication = Authentication(get_user, hash_password)
+    password_hash = PasswordHashSpy()
+    authentication = Authentication(get_user, password_hash)
 
     email = fake.email()
     password = "voumudaressasenhaumdia"
@@ -22,7 +22,7 @@ def test_authentication():
     response = authentication.authentication(email, password)
 
     # Testando a entrada:
-    # Implementar spy para hash_password
+    assert password_hash.verify_params["password"] == password
 
     # Testando a saida:
     assert isinstance(response, dict)
