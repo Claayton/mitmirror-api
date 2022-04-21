@@ -5,6 +5,7 @@ from mitmirror.infra.tests import mock_user
 from mitmirror.infra.config import DataBaseConnectionHandler
 from mitmirror.config import CONNECTION_STRING_TEST
 from .users_routes import users
+from .auth_routes import auth
 
 
 user = mock_user()
@@ -19,7 +20,7 @@ def fake_user():
 
 
 @fixture
-def client_with_one_user(fake_user):  # pylint: disable=W0621
+def client_users_with_one_user(fake_user):  # pylint: disable=W0621
     """
     Montando o client com um usuario cadastrado,
     E deletando no final.
@@ -59,24 +60,67 @@ def client_with_one_user(fake_user):  # pylint: disable=W0621
 
 
 @fixture
-def client_with_one_user_and_delete(
-    client_with_one_user, fake_user
+def client_users_with_one_user_and_delete(
+    client_users_with_one_user, fake_user
 ):  # pylint: disable=W0621
     """
     Montando o client com um usuario cadastrado,
     """
 
-    yield client_with_one_user
+    yield client_users_with_one_user
 
     engine = data_base_connection_handler.get_engine()
     engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
 
 
 @fixture
-def client_with_delete_user(fake_user):  # pylint: disable=W0621
+def client_users_with_delete_user(fake_user):  # pylint: disable=W0621
     """Montando o client e deletando usuario no final"""
 
     yield TestClient(users)
 
     engine = data_base_connection_handler.get_engine()
     engine.execute(f"DELETE FROM users WHERE username='{fake_user.username}';")
+
+
+@fixture
+def client_auth_with_one_user_and_delete(fake_user):  # pylint: disable=W0621
+    """
+    Montando o client com um usuario cadastrado,
+    E deletando no final.
+    """
+
+    engine = data_base_connection_handler.get_engine()
+    engine.execute(
+        f"""
+        INSERT INTO users (
+            id,
+            name,
+            email,
+            username,
+            password_hash,
+            secundary_id,
+            is_staff,
+            is_active_user,
+            last_login,
+            date_joined
+        )
+        VALUES (
+            '{fake_user.id}',
+            '{fake_user.name}',
+            '{fake_user.email}',
+            '{fake_user.username}',
+            '{fake_user.password_hash}',
+            '{fake_user.secundary_id}',
+            {fake_user.is_staff},
+            {fake_user.is_active_user},
+            '{fake_user.last_login}',
+            '{fake_user.date_joined}'
+        );
+        """
+    )
+
+    yield TestClient(auth)
+
+    engine = data_base_connection_handler.get_engine()
+    engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")

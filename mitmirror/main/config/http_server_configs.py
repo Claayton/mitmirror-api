@@ -1,7 +1,7 @@
 """Instanciando o app"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from ..routes import users
+from ..routes import users, auth
 
 
 def create_app() -> FastAPI:
@@ -24,5 +24,6 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(users)
+    app.include_router(auth)
 
     return app
