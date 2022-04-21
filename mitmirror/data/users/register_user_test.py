@@ -12,7 +12,7 @@ def test_register(fake_user, user_repository_spy, register_user):
         name=fake_user.name,
         email=fake_user.email,
         username=fake_user.username,
-        password=fake_user.password_hash,
+        password=fake_user.password,
     )
 
     # Testando a entrada:
