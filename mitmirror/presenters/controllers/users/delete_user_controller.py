@@ -61,7 +61,7 @@ class DeleteUserController(ControllerInterface):
         """Formatando a resposta"""
 
         response = {
-            "message": "Usuario cadastrado com sucesso!",
+            "message": "Usuario deletado com sucesso!",
             "data": {
                 "id": response_method.id,
                 "name": response_method.name,
