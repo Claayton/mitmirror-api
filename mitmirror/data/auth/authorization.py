@@ -1,7 +1,7 @@
 """Caso de uso: Authorization"""
 from typing import Type
-from fastapi import Request, HTTPException
 import jwt
+from mitmirror.presenters.helpers import HttpRequest
 from mitmirror.config import SECRET_KEY
 from mitmirror.errors import HttpUnauthorized
 from mitmirror.domain.usecases import AuthorizationInterface, GetUserInterface
@@ -15,7 +15,7 @@ class Authorization(AuthorizationInterface):
     def __init__(self, get_user: Type[GetUserInterface]) -> None:
         self.__get_user = get_user
 
-    async def token_required(self, request: Request):
+    def token_required(self, request: HttpRequest):
         """
         Serve como dependencia para rotas que necessitam de authorizaçao.
         :param request: Requisicao que deve receber o header Authorization, com o token de acesso.
@@ -26,12 +26,10 @@ class Authorization(AuthorizationInterface):
 
             token = request.headers["Authorization"]
 
-        except KeyError as error:
+        except (KeyError, TypeError) as error:
 
-            http_error = HttpUnauthorized(message="Token invalido ou expirado!")
-
-            raise HTTPException(
-                status_code=http_error.status_code, detail=http_error.message
+            raise HttpUnauthorized(
+                message="Essa requisicao necessita de um token de acesso!, error"
             ) from error
 
         try:
@@ -39,10 +37,10 @@ class Authorization(AuthorizationInterface):
             data = jwt.decode(jwt=token, key=SECRET_KEY, algorithms="HS256")
             current_user = self.__get_user.by_email(data["email"])
 
-        except Exception:  # pylint: disable=W0703
+        except Exception as error:  # pylint: disable=W0703
 
-            http_error = HttpUnauthorized(message="Token invalido ou expirado!")
+            raise HttpUnauthorized(
+                message="Token invalido ou expirado!, error"
+            ) from error
 
-            return {"success": False, "data": {"error": http_error.message}}
-
-        return current_user
+        return current_user["data"]
