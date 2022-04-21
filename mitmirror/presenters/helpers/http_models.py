@@ -6,16 +6,14 @@ class HttpRequest:
     """Representaçao de requisicoes"""
 
     def __init__(
-        self, header: Dict = None, body: Dict = None, query: Dict = None
+        self, headers: Dict = None, body: Dict = None, query: Dict = None
     ) -> None:
-        self.header = header
+        self.headers = headers
         self.body = body
         self.query = query
 
     def __repr__(self):
-        return (
-            f"HttpRequest (header={self.header}, body={self.body}, query={self.query})"
-        )
+        return f"HttpRequest (headers={self.headers}, body={self.body}, query={self.query})"
 
 
 class HttpResponse:

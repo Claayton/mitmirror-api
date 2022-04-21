@@ -17,7 +17,7 @@ async def request_adapter(
         pass
 
     http_request = HttpRequest(
-        header=request.headers, body=body, query=request.query_params
+        headers=request.headers, body=body, query=request.query_params
     )
 
     http_response = callback(user_id, http_request)
