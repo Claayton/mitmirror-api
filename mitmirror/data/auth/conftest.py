@@ -1,6 +1,6 @@
 """Fixtures para tests"""
 from pytest import fixture
-from mitmirror.presenters.helpers import HttpRequest
+from fastapi import Request as RequestFastApi
 from mitmirror.data.users import GetUser
 from mitmirror.infra.repository import UserRepository
 from mitmirror.config import CONNECTION_STRING_TEST
@@ -74,7 +74,12 @@ def request_header(fake_user):  # pylint: disable=W0621
     response_token = authentication.authentication(fake_user.email, fake_user.password)
     token = response_token["data"]["Authorization"]
 
-    yield HttpRequest(headers={"Authorization": token})
+    yield RequestFastApi(
+        scope={
+            "type": "http",
+            "headers": [("authorization".encode("latin-1"), token.encode("latin-1"))],
+        }
+    )
 
     engine = database.get_engine()
     engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
@@ -84,14 +89,21 @@ def request_header(fake_user):  # pylint: disable=W0621
 def request_with_wrong_header():
     """Montando o objeto request sem headers"""
 
-    return HttpRequest(headers={"token": "margarina"})
+    return RequestFastApi(
+        scope={"type": "http", "headers": [("token".encode(), "margarina".encode())]}
+    )
 
 
 @fixture
 def request_with_invalid_token():
     """Montando o objeto request sem headers"""
 
-    return HttpRequest(headers={"Authorization": "margarina"})
+    return RequestFastApi(
+        scope={
+            "type": "http",
+            "headers": [("authorization".encode(), "margarina".encode())],
+        }
+    )
 
 
 @fixture
@@ -104,4 +116,6 @@ def request_without_registered_user():
     SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
     """
 
-    return HttpRequest(headers={"Authorization": token})
+    return RequestFastApi(
+        scope={"type": "http", "headers": [("authorization".encode(), token.encode())]}
+    )

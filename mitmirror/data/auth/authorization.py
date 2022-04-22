@@ -1,7 +1,7 @@
 """Caso de uso: Authorization"""
 from typing import Type
+from fastapi import Request as RequestFastApi
 import jwt
-from mitmirror.presenters.helpers import HttpRequest
 from mitmirror.config import SECRET_KEY
 from mitmirror.errors import HttpUnauthorized
 from mitmirror.domain.usecases import AuthorizationInterface, GetUserInterface
@@ -15,7 +15,7 @@ class Authorization(AuthorizationInterface):
     def __init__(self, get_user: Type[GetUserInterface]) -> None:
         self.__get_user = get_user
 
-    def token_required(self, request: HttpRequest):
+    def token_required(self, request: RequestFastApi):
         """
         Serve como dependencia para rotas que necessitam de authorizaçao.
         :param request: Requisicao que deve receber o header Authorization, com o token de acesso.
