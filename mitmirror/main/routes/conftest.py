@@ -3,13 +3,13 @@ from fastapi.testclient import TestClient
 from pytest import fixture
 from mitmirror.infra.tests import mock_user
 from mitmirror.infra.config import DataBaseConnectionHandler
-from mitmirror.config import CONNECTION_STRING_TEST
+from mitmirror.config import CONNECTION_STRING
 from .users_routes import users
 from .auth_routes import auth
 
 
 user = mock_user()
-data_base_connection_handler = DataBaseConnectionHandler(CONNECTION_STRING_TEST)
+data_base_connection_handler = DataBaseConnectionHandler(CONNECTION_STRING)
 
 
 @fixture(scope="module")

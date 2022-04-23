@@ -5,10 +5,10 @@ from mitmirror.presenters.controllers.users import DeleteUserController
 from mitmirror.config import CONNECTION_STRING
 
 
-def delete_user_composer(connection_string: str = CONNECTION_STRING):
+def delete_user_composer():
     """Montagem do caso de uso DeleteUser"""
 
-    infra = UserRepository(connection_string)
+    infra = UserRepository(CONNECTION_STRING)
     usecase = DeleteUser(infra)
     controller = DeleteUserController(usecase)
 

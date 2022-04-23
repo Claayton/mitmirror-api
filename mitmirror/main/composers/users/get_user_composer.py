@@ -5,10 +5,10 @@ from mitmirror.presenters.controllers.users import GetUserController
 from mitmirror.config import CONNECTION_STRING
 
 
-def get_user_composer(connection_string: str = CONNECTION_STRING):
+def get_user_composer():
     """Montagem do caso de uso GetUser"""
 
-    infra = UserRepository(connection_string)
+    infra = UserRepository(CONNECTION_STRING)
     usecase = GetUser(infra)
     controller = GetUserController(usecase)
 

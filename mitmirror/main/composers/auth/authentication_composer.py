@@ -7,10 +7,10 @@ from mitmirror.presenters.controllers.auth import AuthenticationController
 from mitmirror.config import CONNECTION_STRING
 
 
-def authentication_composer(connection_string: str = CONNECTION_STRING):
+def authentication_composer():
     """Montagem do caso de uso Authentication"""
 
-    infra = UserRepository(connection_string)
+    infra = UserRepository(CONNECTION_STRING)
     get_user = GetUser(infra)
     password_hash = PasswordHash()
     usecase = Authentication(get_user, password_hash)

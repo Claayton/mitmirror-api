@@ -3,7 +3,7 @@ from pytest import fixture
 from fastapi import Request as RequestFastApi
 from mitmirror.data.users import GetUser
 from mitmirror.infra.repository import UserRepository
-from mitmirror.config import CONNECTION_STRING_TEST
+from mitmirror.config import CONNECTION_STRING
 from mitmirror.infra.config import DataBaseConnectionHandler
 from mitmirror.infra.tests import mock_user
 from mitmirror.data.tests import PasswordHashSpy
@@ -11,7 +11,7 @@ from .authentication import Authentication
 from .authorization import Authorization
 
 
-database = DataBaseConnectionHandler(CONNECTION_STRING_TEST)
+database = DataBaseConnectionHandler(CONNECTION_STRING)
 user = mock_user()
 
 
@@ -26,7 +26,7 @@ def fake_user():
 def auth():
     """Montando o objeto Authorization"""
 
-    infra = UserRepository(CONNECTION_STRING_TEST)
+    infra = UserRepository(CONNECTION_STRING)
     get_user = GetUser(infra)
 
     return Authorization(get_user)
@@ -66,7 +66,7 @@ def request_header(fake_user):  # pylint: disable=W0621
         """
     )
 
-    infra = UserRepository(CONNECTION_STRING_TEST)
+    infra = UserRepository(CONNECTION_STRING)
     get_user = GetUser(infra)
     password_hash = PasswordHashSpy()
     authentication = Authentication(get_user, password_hash)

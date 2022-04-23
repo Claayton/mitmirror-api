@@ -3,14 +3,14 @@ from pytest import raises, mark
 from faker import Faker
 from mitmirror.domain.models import User
 from mitmirror.infra.entities import User as UserModel
-from mitmirror.config import CONNECTION_STRING_TEST
+from mitmirror.config import CONNECTION_STRING
 from mitmirror.errors import DefaultError
 from .conftest import user
 from ..config import DataBaseConnectionHandler
 
 
 fake = Faker()
-database = DataBaseConnectionHandler(CONNECTION_STRING_TEST)
+database = DataBaseConnectionHandler(CONNECTION_STRING)
 
 
 def test_insert_user(user_repository_with_delete_user, fake_user):

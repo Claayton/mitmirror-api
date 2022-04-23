@@ -3,7 +3,7 @@ from pytest import fixture
 from mitmirror.infra.repository import UserRepository
 from mitmirror.infra.tests import UserRepositorySpy, mock_user
 from mitmirror.data.security import PasswordHash
-from mitmirror.config import CONNECTION_STRING_TEST
+from mitmirror.config import CONNECTION_STRING
 from mitmirror.data.users import GetUser, GetUsers, RegisterUser, UpdateUser, DeleteUser
 from . import (
     GetUserController,
@@ -28,7 +28,7 @@ def fake_user():
 def user_repository():
     """Montagem de user_repository"""
 
-    return UserRepository(CONNECTION_STRING_TEST)
+    return UserRepository(CONNECTION_STRING)
 
 
 @fixture

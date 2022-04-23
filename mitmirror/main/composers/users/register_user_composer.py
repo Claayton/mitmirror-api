@@ -6,10 +6,10 @@ from mitmirror.presenters.controllers.users import RegisterUserController
 from mitmirror.config import CONNECTION_STRING
 
 
-def register_user_composer(connection_string: str = CONNECTION_STRING):
+def register_user_composer():
     """Montagem do caso de uso RegisterUser"""
 
-    infra = UserRepository(connection_string)
+    infra = UserRepository(CONNECTION_STRING)
     password_hash = PasswordHash()
     usecase = RegisterUser(infra, password_hash)
     controller = RegisterUserController(usecase)

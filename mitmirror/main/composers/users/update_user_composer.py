@@ -6,10 +6,10 @@ from mitmirror.presenters.controllers.users import UpdateUserController
 from mitmirror.config import CONNECTION_STRING
 
 
-def update_user_composer(connection_string: str = CONNECTION_STRING):
+def update_user_composer():
     """Montagem do caso de uso UpdateUser"""
 
-    infra = UserRepository(connection_string)
+    infra = UserRepository(CONNECTION_STRING)
     password_hash = PasswordHash()
     usecase = UpdateUser(infra, password_hash)
     controller = UpdateUserController(usecase)
