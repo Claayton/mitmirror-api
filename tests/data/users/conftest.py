@@ -5,7 +5,13 @@ from mitmirror.infra.tests import mock_user
 from mitmirror.infra.repository import UserRepository
 from mitmirror.config import CONNECTION_STRING
 from mitmirror.data.security import PasswordHash
-from . import RegisterUser, GetUser, GetUsers, UpdateUser, DeleteUser
+from ....mitmirror.data.users import (
+    RegisterUser,
+    GetUser,
+    GetUsers,
+    UpdateUser,
+    DeleteUser,
+)
 
 
 user = mock_user()
