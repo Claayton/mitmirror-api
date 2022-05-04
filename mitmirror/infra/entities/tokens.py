@@ -1,28 +1,22 @@
 """Instancia da tabela Token e seus metodos"""
-from typing import Type
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
-from mitmirror.infra.config import Base
+from sqlmodel import SQLModel, Field, Relationship
+
+if TYPE_CHECKING:
+    from .users import User
 
 
-class Token(Base):
+class Token(SQLModel, table=True):
     """Tabela de tokens"""
 
-    __tablename__ = "tokens"
+    id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
+    token: str
+    expiration: datetime
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    token = Column(String(256))
-    expiration = Column(DateTime, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user_id: int = Field(foreign_key="user.id", primary_key=True, nullable=False)
 
-    user = relationship("User", back_populates="token")
-
-    def __init__(self, token: str, user_id: int, expiration: Type[datetime]):
-
-        self.token = token
-        self.user_id = user_id
-        self.expiration = expiration
+    user: "User" = Relationship(back_populates="token")
 
     def __repr__(self):
         return f"<Token {self.id}: {self.user.name}>"

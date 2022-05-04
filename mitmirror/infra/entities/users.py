@@ -1,27 +1,31 @@
 """Instancia da tabela User e seus metodos"""
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
-from sqlalchemy.orm import relationship
-from mitmirror.infra.config import Base
+from typing import Optional, List, TYPE_CHECKING
+from datetime import datetime
+from sqlalchemy import UniqueConstraint
+from sqlmodel import SQLModel, Field, Relationship
+
+if TYPE_CHECKING:
+    from .tokens import Token
 
 
-class User(Base):
+class User(SQLModel, table=True):
     """Tabela de usuarios"""
 
-    __tablename__ = "users"
+    __table_args__ = (UniqueConstraint("email", "username"),)
 
-    id = Column(Integer, primary_key=True, nullable=False)
-    name = Column(String(100), nullable=False)
-    email = Column(String(100), unique=True, nullable=False)
-    username = Column(String(100), unique=True, nullable=False)
-    password_hash = Column(String(256), nullable=False)
+    id: Optional[int] = Field(primary_key=True, default=None, nullable=False)
+    name: str
+    email: str
+    username: str
+    password_hash: str
 
-    secundary_id = Column(Integer, nullable=False)
-    is_staff = Column(Boolean, nullable=False)
-    is_active_user = Column(Boolean, nullable=False)
-    last_login = Column(DateTime, nullable=False)
-    date_joined = Column(DateTime, nullable=False)
+    secundary_id: int = 0
+    is_staff: bool
+    is_active_user: bool
+    last_login: datetime
+    date_joined: datetime
 
-    token = relationship("Token", back_populates="user")
+    token: List["Token"] = Relationship(back_populates="user")
 
     def __repr__(self):
         return f"<User {self.name}>"
