@@ -6,31 +6,34 @@ from mitmirror.infra.entities import User as UserModel
 from mitmirror.config import CONNECTION_STRING
 from mitmirror.errors import DefaultError
 from .conftest import user
-from ..config import DataBaseConnectionHandler
+from ....mitmirror.infra.config import DataBaseConnectionHandler
 
 
 fake = Faker()
 database = DataBaseConnectionHandler(CONNECTION_STRING)
 
 
-def test_insert_user(user_repository_with_delete_user, fake_user):
+def test_insert_user(fake_user, mocker):
     """
     Testando o metodo insert_user.
     Deve retornar um objeto do tipo User com os mesmos parametros enviados.
     """
 
-    response = user_repository_with_delete_user.insert_user(
-        name=fake_user.name,
-        email=fake_user.email,
-        username=fake_user.username,
-        password_hash=fake_user.password_hash,
-        secundary_id=fake_user.secundary_id,
-    )
+    with DataBaseConnectionHandler(None) as database:
 
-    engine = database.get_engine()
-    query_user = engine.execute(
-        f"""SELECT * FROM users WHERE username='{fake_user.username}';"""
-    ).fetchone()
+        mocker.patch("database.session.add").return_value = mocker.Mock()
+        response = user_repository_with_delete_user.insert_user(
+            name=fake_user.name,
+            email=fake_user.email,
+            username=fake_user.username,
+            password_hash=fake_user.password_hash,
+            secundary_id=fake_user.secundary_id,
+        )
+
+        engine = database.get_engine()
+        query_user = engine.execute(
+            f"""SELECT * FROM users WHERE username='{fake_user.username}';"""
+        ).fetchone()
 
     # Testando se as informacoes enviadas pelo metodo estao no db.
     assert isinstance(response, User)

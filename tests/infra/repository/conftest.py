@@ -1,13 +1,20 @@
 """Arquivo para fixtures"""
 from pytest import fixture
-from mitmirror.config import CONNECTION_STRING_TEST
-from . import UserRepository
-from ..tests import mock_user
-from ..config import DataBaseConnectionHandler
+from mitmirror.config import CONNECTION_STRING
+from ....mitmirror.infra.repository import UserRepository
+from ....mitmirror.infra.tests import mock_user
+from ....mitmirror.infra.config import DataBaseConnectionHandler
 
 
-database = DataBaseConnectionHandler(CONNECTION_STRING_TEST)
+database = DataBaseConnectionHandler(CONNECTION_STRING)
 user = mock_user()
+
+
+@fixture
+def mock_sqlalchemy(mocker):
+    """teste de mocks"""
+
+    mock = mocker.patch("")
 
 
 @fixture(scope="module")
@@ -21,7 +28,7 @@ def fake_user():
 def user_repository():  # pylint: disable=W0621
     """Fixture para montar o objeto UserRepository"""
 
-    return UserRepository(CONNECTION_STRING_TEST)
+    return UserRepository(CONNECTION_STRING)
 
 
 @fixture
