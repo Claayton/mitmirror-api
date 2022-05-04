@@ -1,27 +1,20 @@
 """Configuraçoes de conexao de banco de dados"""
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+import warnings
+
+from sqlalchemy.exc import SAWarning
+from sqlmodel import create_engine, Session
+from sqlmodel.sql.expression import Select, SelectOfScalar
+
+from mitmirror.config import settings
+
+warnings.filterwarnings("ignore", category=SAWarning)
+SelectOfScalar.inherit_cache = True
+Select.inherit_cache = True
 
 
-class DataBaseConnectionHandler:
-    """Conexao de banco de dados com SQLAlchemy"""
+engine = create_engine(settings.database.connection_string)
 
-    def __init__(self, connection_string: str) -> None:
-        self.__connection_string = connection_string
-        self.session = None
 
-    def get_engine(self):
-        """Retorna uma conexao com o banco de dados"""
-
-        engine = create_engine(self.__connection_string)
-
-        return engine
-
-    def __enter__(self):
-        engine = create_engine(self.__connection_string)
-        session_maker = sessionmaker()
-        self.session = session_maker(bind=engine)
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.session.close()
+def get_session():
+    """Entrega uma instancia da session, para manipular o db."""
+    return Session(engine)
