@@ -1,5 +1,14 @@
 """Arquivo de inicializacao do modulo config"""
 from .database import database_infos
+import os
+
+from dynaconf import Dynaconf
+
+settings = Dynaconf(
+    envvar_prefix="MITMIRROR",
+    root_path=os.path.dirname(__file__),
+    settings_files=["settings.toml"],
+)
 
 JSONIFY_PRETTYPRINT_REGULAR = True
 
