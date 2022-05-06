@@ -1,10 +1,11 @@
 """Diretorio de manipulaçao de dados para a tabela User"""
 from typing import Type, List
 from datetime import datetime
+from sqlmodel import select
 from sqlalchemy.exc import NoResultFound
 from mitmirror.data.interfaces import UserRepositoryInterface
 from mitmirror.errors import DefaultError
-from mitmirror.infra.config import DataBaseConnectionHandler
+from mitmirror.infra.config import get_session
 from mitmirror.infra.entities import User as UserModel
 from mitmirror.domain.models import User
 
@@ -12,9 +13,9 @@ from mitmirror.domain.models import User
 class UserRepository(UserRepositoryInterface):
     """Manipulacao de dados da tabela User"""
 
-    def __init__(self, connection_string: str) -> None:
+    def __init__(self) -> None:
 
-        self.__connection_string = connection_string
+        self.__session = get_session()
 
     def insert_user(
         self,
@@ -42,47 +43,24 @@ class UserRepository(UserRepositoryInterface):
         :return: O usuario cadastrado e seus dados.
         """
 
-        with DataBaseConnectionHandler(self.__connection_string) as database:
+        with self.__session as session:
 
             try:
 
-                new_user = UserModel(
-                    name=name,
-                    email=email,
-                    username=username,
-                    password_hash=password_hash,
-                    secundary_id=secundary_id,
-                    is_staff=is_staff,
-                    is_active_user=is_active_user,
-                    date_joined=date_joined,
-                    last_login=last_login,
-                )
-                database.session.add(new_user)
-                database.session.commit()
+                new_user = UserModel(**locals())
 
-                return User(
-                    id=new_user.id,
-                    name=new_user.name,
-                    email=new_user.email,
-                    username=new_user.username,
-                    password_hash=new_user.password_hash,
-                    secundary_id=new_user.secundary_id,
-                    is_staff=new_user.is_staff,
-                    is_active_user=new_user.is_active_user,
-                    date_joined=new_user.date_joined,
-                    last_login=new_user.last_login,
-                )
+                session.add(new_user)
+                session.commit()
+                session.refresh(new_user)
+
+                return User(**new_user.dict())
 
             except Exception as error:
 
-                database.session.rollback()
+                session.rollback()
                 raise DefaultError(
                     type_error=422, message="Parametros invalidos!, error"
                 ) from error
-
-            finally:
-
-                database.session.close()
 
     def get_user(
         self, user_id: int = None, username: str = None, email: str = None
@@ -102,38 +80,37 @@ class UserRepository(UserRepositoryInterface):
 
             if user_id:
 
-                with DataBaseConnectionHandler(self.__connection_string) as database:
+                with self.__session as session:
 
-                    query_user = (
-                        database.session.query(UserModel).filter_by(id=user_id).one()
-                    )
+                    query_user = session.exec(
+                        select(UserModel).where(UserModel.id == user_id)
+                    ).one()
 
             elif username:
 
-                with DataBaseConnectionHandler(self.__connection_string) as database:
+                with self.__session as session:
 
-                    query_user = (
-                        database.session.query(UserModel)
-                        .filter_by(username=username)
-                        .one()
-                    )
+                    query_user = session.exec(
+                        select(UserModel).where(UserModel.username == username)
+                    ).one()
 
             elif email:
 
-                with DataBaseConnectionHandler(self.__connection_string) as database:
+                with self.__session as session:
 
-                    query_user = (
-                        database.session.query(UserModel).filter_by(email=email).one()
-                    )
+                    query_user = session.exec(
+                        select(UserModel).where(UserModel.email == email)
+                    ).one()
 
             else:
 
                 raise DefaultError(
-                    message="E necessario o user_id, username ou email, para encontrar o usuario!, error",
+                    message="""
+                    E necessario o user_id, username ou email, para encontrar o usuario!, error""",
                     type_error=400,
                 )
 
-            return query_user
+            return User(**query_user.dict())
 
         except NoResultFound:
 
@@ -141,27 +118,7 @@ class UserRepository(UserRepositoryInterface):
 
         except Exception as error:  # pylint: disable=W0703
 
-            try:
-
-                database.session.rollback()
-
-            except Exception:  # pylint: disable=W0703
-
-                pass
-
-            finally:
-
-                raise DefaultError(message=str(error)) from error
-
-        finally:
-
-            try:
-
-                database.session.close()
-
-            except Exception:  # pylint: disable=W0703
-
-                pass
+            raise DefaultError(message=str(error)) from error
 
     def get_users(self) -> List[User]:
         """
@@ -171,11 +128,13 @@ class UserRepository(UserRepositoryInterface):
 
         try:
 
-            with DataBaseConnectionHandler(self.__connection_string) as database:
+            with self.__session as session:
 
-                query_data = database.session.query(UserModel).all()
+                query_data = session.exec(select(UserModel)).all()
 
-            return query_data
+            response = [User(**data.dict()) for data in query_data]
+
+            return response
 
         except NoResultFound:
 
@@ -183,24 +142,7 @@ class UserRepository(UserRepositoryInterface):
 
         except Exception as error:  # pylint: disable=W0703
 
-            try:
-
-                database.session.rollback()
-                raise DefaultError(message=str(error)) from error
-
-            except Exception:  # pylint: disable=W0703
-
-                pass
-
-        finally:
-
-            try:
-
-                database.session.close()
-
-            except Exception:  # pylint: disable=W0703
-
-                pass
+            raise DefaultError(message=str(error)) from error
 
     def update_user(
         self,
@@ -230,11 +172,13 @@ class UserRepository(UserRepositoryInterface):
         :return: O usuario com seus dados atualizados.
         """
 
-        with DataBaseConnectionHandler(self.__connection_string) as database:
+        with self.__session as session:
 
             try:
 
-                user = database.session.query(UserModel).filter_by(id=user_id).one()
+                user = session.exec(
+                    select(UserModel).where(UserModel.id == user_id)
+                ).one()
 
                 if not user:
 
@@ -248,9 +192,9 @@ class UserRepository(UserRepositoryInterface):
 
             try:
 
-                username_exist = (
-                    database.session.query(UserModel).filter_by(username=username).one()
-                )
+                username_exist = session.exec(
+                    select(UserModel).where(UserModel.username == username)
+                ).one()
 
                 if username_exist and user.name != name:
 
@@ -264,13 +208,14 @@ class UserRepository(UserRepositoryInterface):
 
             except Exception as error:
 
+                session.rollback()
                 raise DefaultError(message=str(error)) from error
 
             try:
 
-                email_exist = (
-                    database.session.query(UserModel).filter_by(email=email).one()
-                )
+                email_exist = session.exec(
+                    select(UserModel).where(UserModel.email == email)
+                ).one()
 
                 if email_exist and user.email != email:
 
@@ -282,6 +227,7 @@ class UserRepository(UserRepositoryInterface):
 
             except Exception as error:
 
+                session.rollback()
                 raise DefaultError(message=str(error)) from error
 
             try:
@@ -305,42 +251,15 @@ class UserRepository(UserRepositoryInterface):
                 if last_login is not None:
                     user.last_login = last_login
 
-                database.session.commit()
+                session.commit()
+                session.refresh(user)
 
-                return User(
-                    id=user.id,
-                    name=user.name,
-                    email=user.email,
-                    username=user.username,
-                    password_hash=user.password_hash,
-                    secundary_id=user.secundary_id,
-                    is_staff=user.is_staff,
-                    is_active_user=user.is_active_user,
-                    date_joined=user.date_joined,
-                    last_login=user.last_login,
-                )
+                return User(**user.dict())
 
             except Exception as error:  # pylint: disable=W0703
 
-                try:
-
-                    database.session.rollback()
-
-                except Exception:  # pylint: disable=W0703
-
-                    pass
-
+                session.rollback()
                 raise DefaultError(message=str(error)) from error
-
-            finally:
-
-                try:
-
-                    database.session.close()
-
-                except Exception:  # pylint: disable=W0703
-
-                    pass
 
     def delete_user(self, user_id: int) -> User:
         """
@@ -349,11 +268,13 @@ class UserRepository(UserRepositoryInterface):
         :return: O usuario deletado e seus dados.
         """
 
-        with DataBaseConnectionHandler(self.__connection_string) as database:
+        with self.__session as session:
 
             try:
 
-                user = database.session.query(UserModel).filter_by(id=user_id).one()
+                user = session.exec(
+                    select(UserModel).where(UserModel.id == user_id)
+                ).one()
 
                 if not user:
 
@@ -367,27 +288,12 @@ class UserRepository(UserRepositoryInterface):
 
             try:
 
-                database.session.delete(user)
-                database.session.commit()
+                session.delete(user)
+                session.commit()
 
-                return User(
-                    id=user.id,
-                    name=user.name,
-                    email=user.email,
-                    username=user.username,
-                    password_hash=user.password_hash,
-                    secundary_id=user.secundary_id,
-                    is_staff=user.is_staff,
-                    is_active_user=user.is_active_user,
-                    date_joined=user.date_joined,
-                    last_login=user.last_login,
-                )
+                return User(**user.dict())
 
             except Exception as error:
 
-                database.session.rollback()
+                session.rollback()
                 raise DefaultError(message=str(error)) from error
-
-            finally:
-
-                database.session.close()
