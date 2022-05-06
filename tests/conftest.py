@@ -2,7 +2,18 @@
 from unittest.mock import patch
 from pytest import fixture
 from sqlmodel import create_engine, SQLModel
+from mitmirror.infra.tests import mock_user
 from mitmirror.infra.entities import *  # pylint: disable=W0614, W0401
+
+
+user = mock_user()
+
+
+@fixture(scope="module")
+def fake_user():
+    """Mock de usuario"""
+
+    return user
 
 
 @fixture(autouse=True, scope="function")

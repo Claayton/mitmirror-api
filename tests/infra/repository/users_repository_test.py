@@ -1,39 +1,31 @@
-"""Testes para a classe UserRepository"""
+"""Testes para a classe UserRepository"""  # pylint: disable=E0401
 from pytest import raises, mark
-from faker import Faker
+from sqlmodel import select
 from mitmirror.domain.models import User
 from mitmirror.infra.entities import User as UserModel
-from mitmirror.config import CONNECTION_STRING
+from mitmirror.infra.config.database_config import get_session
 from mitmirror.errors import DefaultError
-from .conftest import user
-from ....mitmirror.infra.config import DataBaseConnectionHandler
+from tests.conftest import user
 
 
-fake = Faker()
-database = DataBaseConnectionHandler(CONNECTION_STRING)
-
-
-def test_insert_user(fake_user, mocker):
+def test_insert_user(fake_user, user_repository):
     """
     Testando o metodo insert_user.
     Deve retornar um objeto do tipo User com os mesmos parametros enviados.
     """
 
-    with DataBaseConnectionHandler(None) as database:
+    response = user_repository.insert_user(
+        name=fake_user.name,
+        email=fake_user.email,
+        username=fake_user.username,
+        password_hash=fake_user.password_hash,
+        secundary_id=fake_user.secundary_id,
+    )
 
-        mocker.patch("database.session.add").return_value = mocker.Mock()
-        response = user_repository_with_delete_user.insert_user(
-            name=fake_user.name,
-            email=fake_user.email,
-            username=fake_user.username,
-            password_hash=fake_user.password_hash,
-            secundary_id=fake_user.secundary_id,
-        )
-
-        engine = database.get_engine()
-        query_user = engine.execute(
-            f"""SELECT * FROM users WHERE username='{fake_user.username}';"""
-        ).fetchone()
+    with get_session() as session:
+        query_user = session.exec(
+            select(UserModel).where(UserModel.username == fake_user.username)
+        ).one()
 
     # Testando se as informacoes enviadas pelo metodo estao no db.
     assert isinstance(response, User)
@@ -45,17 +37,16 @@ def test_insert_user(fake_user, mocker):
 
 
 @mark.parametrize(
-    "name,email,username,password_hash,secundary_id",
+    "name,email,username,password_hash",
     [
-        (None, user.email, user.username, user.password_hash, user.secundary_id),
-        (user.name, None, user.username, user.password_hash, user.secundary_id),
-        (user.name, user.email, None, user.password_hash, user.secundary_id),
-        (user.name, user.email, user.username, None, user.secundary_id),
-        (user.name, user.email, user.username, user.password_hash, None),
+        (None, user.email, user.username, user.password_hash),
+        (user.name, None, user.username, user.password_hash),
+        (user.name, user.email, None, user.password_hash),
+        (user.name, user.email, user.username, None),
     ],
 )
 def test_insert_user_missing_one_of_the_params(
-    user_repository, name, email, username, password_hash, secundary_id
+    user_repository, name, email, username, password_hash
 ):
     """
     Testando o erro no metodo insert_user.
@@ -70,7 +61,6 @@ def test_insert_user_missing_one_of_the_params(
             email=email,
             username=username,
             password_hash=password_hash,
-            secundary_id=secundary_id,
         )
 
     assert "error" in str(error.value)
@@ -81,7 +71,7 @@ def test_insert_user_missing_one_of_the_params(
     [(user.id, None, None), (None, user.username, None), (None, None, user.email)],
 )
 def test_get_user(
-    user_repository_with_one_user_registered_and_delete_user,
+    user_repository_with_one_user,
     fake_user,
     user_id,
     username,
@@ -92,17 +82,16 @@ def test_get_user(
     Deve retornar um objeto do tipo User com todas as infomacoes do usuario.
     """
 
-    response = user_repository_with_one_user_registered_and_delete_user.get_user(
+    response = user_repository_with_one_user.get_user(
         user_id=user_id, username=username, email=email
     )
-
-    engine = database.get_engine()
-    query_user = engine.execute(
-        f"""SELECT * FROM users WHERE username='{fake_user.username}';"""
-    ).fetchone()
+    with get_session() as session:
+        query_user = session.exec(
+            select(UserModel).where(UserModel.username == fake_user.username)
+        ).one()
 
     # Testando se as informacoes enviadas pelo metodo estao no db.
-    assert isinstance(response, UserModel)
+    assert isinstance(response, User)
     assert response.name == query_user.name
     assert response.email == query_user.email
     assert response.username == query_user.username
@@ -119,10 +108,6 @@ def test_get_user_with_no_results_found(user_repository, fake_user):
     response = user_repository.get_user(
         user_id=fake_user.id, username=fake_user.username, email=fake_user.email
     )
-    engine = database.get_engine()
-    engine.execute(
-        f"""SELECT * FROM users WHERE username='{fake_user.username}';"""
-    ).fetchone()
 
     # Testando se o retorno e uma lista vazia.
     assert response == []
@@ -141,24 +126,41 @@ def test_get_user_without_params(user_repository):
     assert "error" in str(error.value)
 
 
-def test_get_users(user_repository_with_two_users_registered_and_delete_user):
+def test_get_users(user_repository_with_one_user, fake_user):
     """
-    Testando o metodo get_usesr.
+    Testando o metodo get_users.
     Deve uma lista com todos os usuarios cadastrados.
     """
 
-    response = user_repository_with_two_users_registered_and_delete_user.get_users()
-    engine = database.get_engine()
-    query_user = engine.execute("SELECT * FROM users;").fetchall()
+    with get_session() as session:
+        new_user = UserModel(
+            id=fake_user.id + 1,
+            name=fake_user.name,
+            email=f"{fake_user.email}2",
+            username=f"{fake_user.username}2",
+            password_hash=fake_user.password_hash,
+            secundary_id=fake_user.secundary_id,
+            is_staff=fake_user.is_staff,
+            is_active_user=fake_user.is_active_user,
+            date_joined=fake_user.date_joined,
+            last_login=fake_user.last_login,
+        )
+        session.add(new_user)
+        session.commit()
+
+    response = user_repository_with_one_user.get_users()
+
+    with get_session() as session:
+        query_users = list(session.exec(select(UserModel)))
 
     # Testando se as informacoes enviadas pelo metodo estao no db.
     assert isinstance(response, list)
-    assert response[0].id == query_user[0].id
-    assert response[0].username == query_user[0].username
-    assert response[0].email == query_user[0].email
-    assert response[1].id == query_user[1].id
-    assert response[1].username == query_user[1].username
-    assert response[1].email == query_user[1].email
+    assert response[0].id == query_users[0].id
+    assert response[0].username == query_users[0].username
+    assert response[0].email == query_users[0].email
+    assert response[1].id == query_users[1].id
+    assert response[1].username == query_users[1].username
+    assert response[1].email == query_users[1].email
 
 
 def test_get_users_with_no_results_found(user_repository):
@@ -173,20 +175,18 @@ def test_get_users_with_no_results_found(user_repository):
     assert response == []
 
 
-def test_update_user(
-    user_repository_with_one_user_registered_and_delete_user, fake_user
-):
+def test_update_user(user_repository_with_one_user, fake_user):
     """
     Testando o metodo update_user.
     Deve retornar um objeto do tipo User com os mesmos parametros enviados.
     """
 
-    engine = database.get_engine()
-    query_user = engine.execute(
-        f"""SELECT * FROM users WHERE id='{fake_user.id}';"""
-    ).fetchone()
+    with get_session() as session:
+        query_user = session.exec(
+            select(UserModel).where(UserModel.id == fake_user.id)
+        ).one()
 
-    response = user_repository_with_one_user_registered_and_delete_user.update_user(
+    response = user_repository_with_one_user.update_user(
         user_id=fake_user.id,
         name=f"{fake_user.name}2",
         email=f"{fake_user.email}2",
@@ -224,12 +224,12 @@ def test_update_user_with_no_results_found(user_repository, fake_user):
 @mark.parametrize(
     "user_id,username,email",
     [
-        (user.id, f"{user.username}1", user.email),
-        (user.id, user.username, f"{user.email}1"),
+        (user.id, f"{user.username}", user.email),
+        (user.id, user.username, f"{user.email}"),
     ],
 )
 def test_update_user_with_username_or_email_unavailable(
-    user_repository_with_two_users_registered_and_delete_user,
+    user_repository_with_one_user,
     fake_user,
     user_id,
     username,
@@ -239,9 +239,26 @@ def test_update_user_with_username_or_email_unavailable(
     Testando o metodo update_user onde novo nome de usuario ou email esta indisponivel.
     Deve retornar um DefaultError.
     """
+
+    with get_session() as session:
+        new_user = UserModel(
+            id=fake_user.id + 1,
+            name=fake_user.name,
+            email=f"{fake_user.email}2",
+            username=f"{fake_user.username}2",
+            password_hash=fake_user.password_hash,
+            secundary_id=fake_user.secundary_id,
+            is_staff=fake_user.is_staff,
+            is_active_user=fake_user.is_active_user,
+            date_joined=fake_user.date_joined,
+            last_login=fake_user.last_login,
+        )
+        session.add(new_user)
+        session.commit()
+
     with raises(DefaultError) as error:
 
-        user_repository_with_two_users_registered_and_delete_user.update_user(
+        user_repository_with_one_user.update_user(
             user_id=user_id,
             name=f"{fake_user.name}2",
             email=email,
@@ -253,26 +270,22 @@ def test_update_user_with_username_or_email_unavailable(
     assert "indisponivel" in str(error.value)
 
 
-def test_delete_user(
-    user_repository_with_one_user_registered_and_delete_user, fake_user
-):
+def test_delete_user(user_repository_with_one_user, fake_user):
     """
     Testando o metodo delete_user.
     Deve retornar um objeto do tipo User com as informacoes do usuario deletado.
     """
 
-    response = user_repository_with_one_user_registered_and_delete_user.delete_user(
-        fake_user.id
-    )
+    response = user_repository_with_one_user.delete_user(fake_user.id)
 
-    engine = database.get_engine()
-    query_user = engine.execute(
-        f"""SELECT * FROM users WHERE id='{fake_user.id}';"""
-    ).fetchone()
+    with get_session() as session:
+        query_user = session.exec(
+            select(UserModel).where(UserModel.username == fake_user.username)
+        ).all()
 
     assert isinstance(response, User)
     assert response.id == fake_user.id
-    assert query_user is None
+    assert not query_user
 
 
 def test_delete_user_with_no_results_found(user_repository, fake_user):
