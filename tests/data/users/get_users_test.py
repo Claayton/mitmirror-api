@@ -1,16 +1,17 @@
-"""Testes para a classe GetUsers"""
+"""Testes para a classe GetUsers"""  # pylint: disable=E0401
 from typing import List
+from unittest.mock import patch
 from pytest import raises
 from mitmirror.errors import DefaultError
 
 
-def test_all_users(get_users_with_spy):
+def test_all_users(get_users):
     """
     Testando o metodo all_users.
     Deve retornar uma mensagem de sucesso, e uma lista de usuarios.
     """
 
-    response = get_users_with_spy.all_users()
+    response = get_users.all_users()
 
     # Testando a saida:
     assert response["success"] is True
@@ -26,6 +27,10 @@ def test_all_users_with_on_result_found(get_users):
 
     with raises(DefaultError) as error:
 
-        get_users.all_users()
+        with patch(
+            "mitmirror.infra.tests.user_repository_spy.UserRepositorySpy.get_users",
+            return_value=[],
+        ):
+            get_users.all_users()
 
     assert "Nenhum usuario encontrado!" in str(error.value)

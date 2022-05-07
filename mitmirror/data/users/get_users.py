@@ -1,4 +1,4 @@
-"""Caso de uso Getusers"""
+"""Caso de uso GetUsers"""
 from typing import Type, Dict, List
 from mitmirror.data.interfaces import UserRepositoryInterface
 from mitmirror.domain.models import User
@@ -33,27 +33,21 @@ class GetUsers(GetUsersInterface):
     def __format_response(cls, data_list: List[User]) -> User:
         """Realiza a formatacao da resposta"""
 
-        response = []
-
         if not data_list:
 
             return None
 
-        for data in data_list:
-
-            response.append(
-                User(
-                    id=data.id,
-                    name=data.name,
-                    email=data.email,
-                    username=data.username,
-                    password_hash=data.password_hash,
-                    secundary_id=data.secundary_id,
-                    is_staff=data.is_staff,
-                    is_active_user=data.is_active_user,
-                    last_login=data.last_login,
-                    date_joined=data.date_joined,
-                )
-            )
-
-        return response
+        return [
+            User(
+                id=data.id,
+                name=data.name,
+                email=data.email,
+                username=data.username,
+                password_hash=data.password_hash,
+                secundary_id=data.secundary_id,
+                is_staff=data.is_staff,
+                is_active_user=data.is_active_user,
+                last_login=data.last_login,
+                date_joined=data.date_joined,
+            ) for data in data_list
+        ]
