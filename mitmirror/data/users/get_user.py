@@ -27,7 +27,7 @@ class GetUser(GetUserInterface):
 
             data = self.__user_repository.get_user(user_id=user_id)
 
-            if data == []:
+            if not data:
 
                 raise DefaultError(message="Usuario nao encontrado!", type_error=404)
 
@@ -81,7 +81,7 @@ class GetUser(GetUserInterface):
 
             return None
 
-        response = User(
+        return User(
             id=data.id,
             name=data.name,
             email=data.email,
@@ -93,5 +93,3 @@ class GetUser(GetUserInterface):
             last_login=data.last_login,
             date_joined=data.date_joined,
         )
-
-        return response

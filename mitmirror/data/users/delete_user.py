@@ -15,7 +15,7 @@ class DeleteUser(DeleteUserInterface):
 
     def delete(self, user_id: int) -> Dict[bool, User]:
         """
-        Realiza a excluzao de um usuario no banco de dados pelo id.
+        Realiza a exclusao de um usuario no banco de dados pelo id.
         :param user_id: ID do usuario cadastrado.
         :return: Uma mensagem de sucesso e o usuario excluido.
         """
