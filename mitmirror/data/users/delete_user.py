@@ -27,7 +27,7 @@ class DeleteUser(DeleteUserInterface):
 
             data = self.__user_repository.delete_user(user_id=user_id)
 
-            if data == []:
+            if not data:
 
                 raise DefaultError(message="Usuario nao encontrado!", type_error=404)
 
@@ -41,7 +41,7 @@ class DeleteUser(DeleteUserInterface):
 
             return None
 
-        response = User(
+        return User(
             id=data.id,
             name=data.name,
             email=data.email,
@@ -53,5 +53,3 @@ class DeleteUser(DeleteUserInterface):
             last_login=data.last_login,
             date_joined=data.date_joined,
         )
-
-        return response
