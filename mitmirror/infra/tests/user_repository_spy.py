@@ -3,7 +3,7 @@ from typing import Type, List
 from datetime import datetime
 from mitmirror.data.interfaces import UserRepositoryInterface
 from mitmirror.domain.models import User
-from . import mock_user
+from mitmirror.infra.tests import mock_user
 
 
 class UserRepositorySpy(UserRepositoryInterface):

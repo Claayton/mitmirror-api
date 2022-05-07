@@ -1,34 +1,14 @@
-"""Arquivo para fixtures"""
+"""Arquivo para fixtures"""  # pylint: disable=E0401
 from pytest import fixture
 from mitmirror.infra.tests import UserRepositorySpy
-from mitmirror.infra.tests import mock_user
-from mitmirror.infra.repository import UserRepository
-from mitmirror.config import CONNECTION_STRING
 from mitmirror.data.security import PasswordHash
-from ....mitmirror.data.users import (
+from mitmirror.data.users import (
     RegisterUser,
     GetUser,
     GetUsers,
     UpdateUser,
     DeleteUser,
 )
-
-
-user = mock_user()
-
-
-@fixture(scope="module")
-def fake_user():
-    """Mock de usuario"""
-
-    return user
-
-
-@fixture
-def user_repository():
-    """repositorio padrao"""
-
-    return UserRepository(CONNECTION_STRING)
 
 
 @fixture
@@ -46,29 +26,15 @@ def register_user(user_repository_spy):  # pylint: disable=W0621
 
 
 @fixture
-def get_user(user_repository):  # pylint: disable=W0621
-    """Fixture para montar o objeto GetUser"""
-
-    return GetUser(user_repository)
-
-
-@fixture
-def get_user_with_spy(user_repository_spy):  # pylint: disable=W0621
+def get_user(user_repository_spy):  # pylint: disable=W0621
     """Fixture para montar o objeto Getuser"""
 
     return GetUser(user_repository_spy)
 
 
 @fixture
-def get_users(user_repository):  # pylint: disable=W0621
+def get_users(user_repository_spy):  # pylint: disable=W0621
     """Fixture para montar o objeto GetUsers"""
-
-    return GetUsers(user_repository)
-
-
-@fixture
-def get_users_with_spy(user_repository_spy):  # pylint: disable=W0621
-    """Fixture para montar o objeto Getusers"""
 
     return GetUsers(user_repository_spy)
 
@@ -81,14 +47,7 @@ def update_user(user_repository_spy):  # pylint: disable=W0621
 
 
 @fixture
-def delete_user_with_spy(user_repository_spy):  # pylint: disable=W0621
+def delete_user(user_repository_spy):  # pylint: disable=W0621
     """Fixture para montar o objeto DeleteUser"""
 
     return DeleteUser(user_repository_spy)
-
-
-@fixture
-def delete_user(user_repository):  # pylint: disable=W0621
-    """Fixture para montar o objeto DeleteUser"""
-
-    return DeleteUser(user_repository)
