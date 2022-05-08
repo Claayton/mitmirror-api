@@ -48,7 +48,7 @@ def test_delete_with_no_result_found(delete_user, fake_user):
     with raises(DefaultError) as error:
 
         with patch(
-            "mitmirror.infra.tests.user_repository_spy.UserRepositorySpy.delete_user",
+            "tests.mocks.user_repository_spy.UserRepositorySpy.delete_user",
             return_value=[],
         ):
             delete_user.delete(user_id=fake_user.id)

@@ -28,7 +28,7 @@ def test_all_users_with_on_result_found(get_users):
     with raises(DefaultError) as error:
 
         with patch(
-            "mitmirror.infra.tests.user_repository_spy.UserRepositorySpy.get_users",
+            "tests.mocks.user_repository_spy.UserRepositorySpy.get_users",
             return_value=[],
         ):
             get_users.all_users()

@@ -1,6 +1,6 @@
 """Arquivo para fixtures"""  # pylint: disable=E0401
 from pytest import fixture
-from mitmirror.infra.tests import UserRepositorySpy
+from tests.mocks import UserRepositorySpy
 from mitmirror.data.security import PasswordHash
 from mitmirror.data.users import (
     RegisterUser,

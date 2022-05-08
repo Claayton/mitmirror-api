@@ -2,7 +2,7 @@
 from unittest.mock import patch
 from pytest import fixture
 from sqlmodel import create_engine, SQLModel
-from mitmirror.infra.tests import mock_user
+from tests.mocks import mock_user
 from mitmirror.infra.entities import *  # pylint: disable=W0614, W0401
 
 

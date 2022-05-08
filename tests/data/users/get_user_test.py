@@ -48,7 +48,7 @@ def test_by_id_with_no_result_found(get_user, fake_user):
     with raises(DefaultError) as error:
 
         with patch(
-            "mitmirror.infra.tests.user_repository_spy.UserRepositorySpy.get_user",
+            "tests.mocks.user_repository_spy.UserRepositorySpy.get_user",
             return_value=[],
         ):
             get_user.by_id(user_id=fake_user.id)
@@ -99,7 +99,7 @@ def test_by_email_with_no_result_found(get_user, fake_user):
     with raises(DefaultError) as error:
 
         with patch(
-            "mitmirror.infra.tests.user_repository_spy.UserRepositorySpy.get_user",
+            "tests.mocks.user_repository_spy.UserRepositorySpy.get_user",
             return_value=[],
         ):
             get_user.by_email(email=fake_user.email)
@@ -150,7 +150,7 @@ def test_by_username_with_no_result_found(get_user, fake_user):
     with raises(DefaultError) as error:
 
         with patch(
-            "mitmirror.infra.tests.user_repository_spy.UserRepositorySpy.get_user",
+            "tests.mocks.user_repository_spy.UserRepositorySpy.get_user",
             return_value=[],
         ):
             get_user.by_username(username=fake_user.username)
