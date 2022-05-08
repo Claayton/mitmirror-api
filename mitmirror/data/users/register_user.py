@@ -61,7 +61,11 @@ class RegisterUser(RegisterUserInterface):
     def __format_response(cls, data) -> User:
         """Realiza a formatacao da resposta"""
 
-        response = User(
+        if not data:
+
+            return None
+
+        return User(
             id=data.id,
             name=data.name,
             email=data.email,
@@ -73,5 +77,3 @@ class RegisterUser(RegisterUserInterface):
             last_login=data.last_login,
             date_joined=data.date_joined,
         )
-
-        return response

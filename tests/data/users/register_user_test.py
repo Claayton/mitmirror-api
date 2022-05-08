@@ -1,5 +1,8 @@
-"""Testes para a classe RegisterUser"""
+"""Testes para a classe RegisterUser"""  # pylint: disable=E0401
+from pytest import raises, mark
 from mitmirror.domain.models import User
+from mitmirror.errors import DefaultError
+from tests.conftest import user
 
 
 def test_register(fake_user, user_repository_spy, register_user):
@@ -23,3 +26,31 @@ def test_register(fake_user, user_repository_spy, register_user):
     # Testando a saida:
     assert response["success"] is True
     assert isinstance(response["data"], User)
+
+
+@mark.parametrize(
+    "name,email,username,password",
+    [
+        (user.id, user.email, user.username, user.password),
+        (user.name, user.id, user.username, user.password),
+        (user.name, user.email, user.id, user.password),
+        (user.name, user.email, user.username, user.id),
+    ],
+)
+def test_register_with_invalid_params(register_user, name, email, username, password):
+    """
+    Testando o erro no metodo register.
+    Utilizando parametros invalidos.
+    Deve retornar um DefaultError.
+    """
+
+    with raises(DefaultError) as error:
+
+        register_user.register(
+            name=name,
+            email=email,
+            username=username,
+            password=password,
+        )
+
+    assert "Esta requisicao necessita dos parametros:" in str(error.value)
