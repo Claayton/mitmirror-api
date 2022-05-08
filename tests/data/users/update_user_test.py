@@ -1,4 +1,4 @@
-"""Testes para a classe UpdateUser"""
+"""Testes para a classe UpdateUser"""  # pylint: disable=E0401
 from mitmirror.domain.models import User
 
 

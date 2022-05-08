@@ -47,13 +47,11 @@ class UpdateUser(UpdateUserInterface):
         :return: Uma mensagem de sucesso e o usuario com seus dados atualizados.
         """
 
+        password_hash = None
+
         if password:
 
             password_hash = self.__password_hash.hash(password).decode()
-
-        else:
-
-            password_hash = None
 
         try:
 
@@ -81,13 +79,13 @@ class UpdateUser(UpdateUserInterface):
 
         except Exception as error:
 
-            raise DefaultError() from error
+            raise DefaultError(str(error)) from error
 
     @classmethod
     def __format_response(cls, data) -> User:
         """Realiza a formatacao da resposta"""
 
-        response = User(
+        return User(
             id=data.id,
             name=data.name,
             email=data.email,
@@ -99,5 +97,3 @@ class UpdateUser(UpdateUserInterface):
             last_login=data.last_login,
             date_joined=data.date_joined,
         )
-
-        return response
