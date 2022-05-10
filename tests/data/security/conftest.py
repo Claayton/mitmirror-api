@@ -1,0 +1,112 @@
+"""Fixtures para tests"""
+from pytest import fixture
+from fastapi import Request as RequestFastApi
+from mitmirror.data.users import GetUser
+from mitmirror.data.security import Authentication
+from mitmirror.config import CONNECTION_STRING
+from tests.mocks import UserRepositorySpy, PasswordHashSpy
+
+
+@fixture
+def password_hash_spy():
+    """Montando o objeto PasswordHashSpy"""
+
+    return PasswordHashSpy()
+
+
+@fixture
+def authentication(password_hash_spy):  # pylint: disable=W0621
+    """Montando o objeto Authentication"""
+
+    user_repository_spy = UserRepositorySpy()
+
+    return Authentication(user_repository_spy, password_hash_spy)
+
+
+@fixture
+def request_header(fake_user):  # pylint: disable=W0621
+    """Montando o request com um usuario adicionado e deletando no final."""
+
+    engine = database.get_engine()
+    engine.execute(
+        f"""
+        INSERT INTO users (
+            id,
+            name,
+            email,
+            username,
+            password_hash,
+            secundary_id,
+            is_staff,
+            is_active_user,
+            last_login,
+            date_joined
+        )
+        VALUES (
+            '{fake_user.id}',
+            '{fake_user.name}',
+            '{fake_user.email}',
+            '{fake_user.username}',
+            '{fake_user.password}',
+            '{fake_user.secundary_id}',
+            '{fake_user.is_staff}',
+            '{fake_user.is_active_user}',
+            '{fake_user.last_login}',
+            '{fake_user.date_joined}'
+        );
+        """
+    )
+
+    infra = UserRepository(CONNECTION_STRING)
+    get_user = GetUser(infra)
+    password_hash = PasswordHashSpy()
+    authentication = Authentication(get_user, password_hash)
+
+    response_token = authentication.authentication(fake_user.email, fake_user.password)
+    token = response_token["data"]["Authorization"]
+
+    yield RequestFastApi(
+        scope={
+            "type": "http",
+            "headers": [("authorization".encode("latin-1"), token.encode("latin-1"))],
+        }
+    )
+
+    engine = database.get_engine()
+    engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
+
+
+@fixture
+def request_with_wrong_header():
+    """Montando o objeto request sem headers"""
+
+    return RequestFastApi(
+        scope={"type": "http", "headers": [("token".encode(), "margarina".encode())]}
+    )
+
+
+@fixture
+def request_with_invalid_token():
+    """Montando o objeto request sem headers"""
+
+    return RequestFastApi(
+        scope={
+            "type": "http",
+            "headers": [("authorization".encode(), "margarina".encode())],
+        }
+    )
+
+
+@fixture
+def request_without_registered_user():
+    """Montando o objeto request sem headers"""
+
+    token = """
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.\
+    eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.\
+    SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    """
+
+    return RequestFastApi(
+        scope={"type": "http", "headers": [("authorization".encode(), token.encode())]}
+    )
