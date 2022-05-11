@@ -1,8 +1,5 @@
 """Testes para a classe PasswordHash"""
-from faker import Faker
-from .password_hash import PasswordHash
-
-fake = Faker()
+from mitmirror.data.security.password_hash import PasswordHash
 
 
 def test_hash():
