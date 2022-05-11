@@ -2,9 +2,10 @@
 from typing import Type
 from fastapi import Request as RequestFastApi
 import jwt
+from mitmirror.data.interfaces import UserRepositoryInterface
+from mitmirror.domain.usecases import AuthorizationInterface
+from mitmirror.errors import HttpUnauthorized, HttpForbidden
 from mitmirror.config import SECRET_KEY
-from mitmirror.errors import HttpUnauthorized
-from mitmirror.domain.usecases import AuthorizationInterface, GetUserInterface
 
 
 class Authorization(AuthorizationInterface):
@@ -12,8 +13,8 @@ class Authorization(AuthorizationInterface):
     Classe responsavel pela autorizaçao dos usuarios no sistema.
     """
 
-    def __init__(self, get_user: Type[GetUserInterface]) -> None:
-        self.__get_user = get_user
+    def __init__(self, user_repository: Type[UserRepositoryInterface]) -> None:
+        self.__user_repository = user_repository
 
     def token_required(self, request: RequestFastApi):
         """
@@ -35,12 +36,10 @@ class Authorization(AuthorizationInterface):
         try:
 
             data = jwt.decode(jwt=token, key=SECRET_KEY, algorithms="HS256")
-            current_user = self.__get_user.by_email(data["email"])
+            current_user = self.__user_repository.get_user(email=data["email"])
 
         except Exception as error:  # pylint: disable=W0703
 
-            raise HttpUnauthorized(
-                message="Token invalido ou expirado!, error"
-            ) from error
+            raise HttpForbidden(message="Token invalido ou expirado!, error") from error
 
-        return current_user["data"]
+        return current_user
