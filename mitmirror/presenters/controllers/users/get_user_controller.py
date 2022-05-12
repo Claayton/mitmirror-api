@@ -1,10 +1,10 @@
 """Controllers para GetUser"""
-from typing import Type
+from typing import Type, Optional
 from datetime import datetime
 from mitmirror.domain.models import User
-from mitmirror.presenters.helpers import HttpRequest, HttpResponse
 from mitmirror.domain.usecases import GetUserInterface
 from mitmirror.presenters.interfaces import ControllerInterface
+from mitmirror.presenters.helpers import HttpRequest, HttpResponse
 from mitmirror.errors import (
     HttpBadRequestError,
     DefaultError,
@@ -21,7 +21,7 @@ class GetUserController(ControllerInterface):
         self.__usecase = usecase
 
     def handler(
-        self, param: any = None, http_request: Type[HttpRequest] = None
+        self, param: Optional[any] = None, http_request: Type[HttpRequest] = None
     ) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
@@ -38,9 +38,7 @@ class GetUserController(ControllerInterface):
             user_id = int(param)
             response = self.__usecase.by_id(user_id=user_id)
 
-            formated_response = self.__format_response(response["data"])
-
-            return formated_response
+            return self.__format_response(response["data"])
 
         except ValueError as error:
 
@@ -62,7 +60,8 @@ class GetUserController(ControllerInterface):
 
             raise error
 
-    def __format_response(self, response_method: Type[User]) -> HttpResponse:
+    @classmethod
+    def __format_response(cls, response_method: Type[User]) -> HttpResponse:
         """Formatando a resposta"""
 
         response = {
