@@ -5,7 +5,7 @@ from mitmirror.infra.tests import UserRepositorySpy, mock_user
 from mitmirror.data.security import PasswordHash
 from mitmirror.config import CONNECTION_STRING
 from mitmirror.data.users import GetUser, GetUsers, RegisterUser, UpdateUser, DeleteUser
-from . import (
+from .....mitmirror.presenters.controllers.users import (
     GetUserController,
     GetUsersController,
     RegisterUserController,
