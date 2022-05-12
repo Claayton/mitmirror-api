@@ -40,7 +40,7 @@ def get_users_controller(user_repository_spy):  # pylint: disable=W0621
 
 
 @fixture
-def register_user(user_repository_spy):  # pylint: disable=W0621
+def register_user_controller(user_repository_spy):  # pylint: disable=W0621
     """montagem de register_user_controller utilizando spy"""
 
     usecase = RegisterUser(user_repository_spy, PasswordHash())

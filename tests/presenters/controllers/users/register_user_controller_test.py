@@ -1,14 +1,14 @@
 """Testes para RegisterUsersController"""
 from pytest import raises, mark
-from mitmirror.errors import HttpBadRequestError
-from mitmirror.infra.tests import mock_user
 from mitmirror.presenters.helpers.http_models import HttpRequest
+from mitmirror.errors import HttpBadRequestError
+from tests.mocks import mock_user
 
 
 user = mock_user()
 
 
-def test_handler(register_user_with_spy, user_repository_spy, fake_user):
+def test_handler(register_user_controller, user_repository_spy, fake_user):
     """Testando o metodo handler"""
 
     attributes = {
@@ -18,7 +18,9 @@ def test_handler(register_user_with_spy, user_repository_spy, fake_user):
         "password": fake_user.password_hash,
     }
 
-    response = register_user_with_spy.handler(http_request=HttpRequest(body=attributes))
+    response = register_user_controller.handler(
+        http_request=HttpRequest(body=attributes)
+    )
 
     # Testando as entradas:
     assert user_repository_spy.insert_user_params["name"] == attributes["name"]
@@ -31,7 +33,7 @@ def test_handler(register_user_with_spy, user_repository_spy, fake_user):
     assert "error" not in response.body
 
 
-def test_handler_error_without_body_params(register_user_with_spy):
+def test_handler_error_without_body_params(register_user_controller):
     """
     Testando o erro no metodo handler.
     Sem utilizar body params.
@@ -40,7 +42,7 @@ def test_handler_error_without_body_params(register_user_with_spy):
 
     with raises(HttpBadRequestError) as error:
 
-        register_user_with_spy.handler(http_request=HttpRequest())
+        register_user_controller.handler(http_request=HttpRequest())
 
     assert "error" in str(error.value)
 
@@ -55,7 +57,7 @@ def test_handler_error_without_body_params(register_user_with_spy):
     ],
 )
 def test_handler_error_missing_some_of_the_body_params(
-    name, email, username, password, register_user_with_spy
+    name, email, username, password, register_user_controller
 ):
     """
     Testando o erro no metodo handler.
@@ -72,6 +74,6 @@ def test_handler_error_missing_some_of_the_body_params(
 
     with raises(HttpBadRequestError) as error:
 
-        register_user_with_spy.handler(http_request=HttpRequest(body=attributes))
+        register_user_controller.handler(http_request=HttpRequest(body=attributes))
 
     assert "error" in str(error.value)
