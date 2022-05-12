@@ -1,5 +1,5 @@
 """Controllers para GetUsers"""
-from typing import Type, List
+from typing import Type, List, Optional
 from datetime import datetime
 from mitmirror.domain.models import User
 from mitmirror.errors import HttpNotFound, DefaultError
@@ -16,16 +16,14 @@ class GetUsersController(ControllerInterface):
         self.__usecase = usecase
 
     def handler(
-        self, param: any = None, http_request: Type[HttpRequest] = None
+        self, param: Optional[any] = None, http_request: Type[HttpRequest] = None
     ) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
         try:
 
             response = self.__usecase.all_users()
-            formated_response = self.__format_response(response["data"])
-
-            return formated_response
+            return self.__format_response(response["data"])
 
         except DefaultError as error:
 
@@ -45,24 +43,21 @@ class GetUsersController(ControllerInterface):
     def __format_response(cls, response_method: List[User]) -> HttpResponse:
         """Formatando a resposta"""
 
-        full_response = []
-
-        for user in response_method:
-
-            full_response.append(
-                {
-                    "id": user.id,
-                    "name": user.name,
-                    "email": user.email,
-                    "username": user.username,
-                    "password_hash": "Nao mostramos isso aqui!",
-                    "secundary_id": user.secundary_id,
-                    "is_staff": user.is_staff,
-                    "is_active_user": user.is_active_user,
-                    "last_login": datetime.isoformat(user.last_login),
-                    "date_joined": datetime.isoformat(user.date_joined),
-                }
-            )
+        full_response = [
+            {
+                "id": user.id,
+                "name": user.name,
+                "email": user.email,
+                "username": user.username,
+                "password_hash": "Nao mostramos isso aqui!",
+                "secundary_id": user.secundary_id,
+                "is_staff": user.is_staff,
+                "is_active_user": user.is_active_user,
+                "last_login": datetime.isoformat(user.last_login),
+                "date_joined": datetime.isoformat(user.date_joined),
+            }
+            for user in response_method
+        ]
 
         response = {"message": "Usuarios encontrados!", "data": full_response}
 

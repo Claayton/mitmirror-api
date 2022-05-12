@@ -1,16 +1,17 @@
 """Testes para GetUsersController"""
+from unittest.mock import patch
 from pytest import raises
 from mitmirror.errors import HttpNotFound
-from mitmirror.infra.tests import mock_user
+from tests.mocks import mock_user
 
 
 user = mock_user()
 
 
-def test_handler(get_users_controller_with_spy):
+def test_handler(get_users_controller):
     """Testando o metodo handler"""
 
-    response = get_users_controller_with_spy.handler(None)
+    response = get_users_controller.handler(None)
 
     # Testando as saidas:
     assert response.status_code == 200
@@ -26,6 +27,10 @@ def test_handler_error_not_found(get_users_controller):
 
     with raises(HttpNotFound) as error:
 
-        get_users_controller.handler()
+        with patch(
+            "tests.mocks.user_repository_spy.UserRepositorySpy.get_users",
+            return_value=[],
+        ):
+            get_users_controller.handler()
 
     assert "error" in str(error.value)
