@@ -1,5 +1,5 @@
 """Arquivo de interface para controlers"""
-from typing import Type
+from typing import Type, Optional
 from abc import ABC, abstractmethod
 from mitmirror.presenters.helpers import HttpRequest, HttpResponse
 
@@ -9,7 +9,7 @@ class ControllerInterface(ABC):
 
     @abstractmethod
     def handler(
-        self, param: any = None, http_request: Type[HttpRequest] = None
+        self, param: Optional[any] = None, http_request: Type[HttpRequest] = None
     ) -> HttpResponse:
         """Methodo para facilitar o request"""
 

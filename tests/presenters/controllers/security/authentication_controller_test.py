@@ -1,16 +1,13 @@
 """Testes para AuthenticationController"""
 from pytest import raises
-from faker import Faker
 from mitmirror.errors import HttpBadRequestError, HttpUnprocessableEntity
 from mitmirror.presenters.helpers import HttpRequest
 
-fake = Faker()
 
-
-def test_handler(authentication_controller, password_hash):
+def test_handler(authentication_controller, password_hash, fake_user):
     """Testando o metodo handler"""
 
-    attributes = {"email": fake.email(), "password": fake.password()}
+    attributes = {"email": fake_user.email, "password": fake_user.password}
 
     response = authentication_controller.handler(
         http_request=HttpRequest(body=attributes)
@@ -38,7 +35,7 @@ def test_handler_error_without_body_params(authentication_controller):
     assert "error" in str(error.value)
 
 
-def test_handler_error_with_invalid_body_params(authentication_controller):
+def test_handler_error_with_invalid_body_params(authentication_controller, fake_user):
     """
     Testando o erro no metodo handler.
     Onde sao passados parametros invalidos para a requisicao.
@@ -47,7 +44,7 @@ def test_handler_error_with_invalid_body_params(authentication_controller):
 
     with raises(HttpUnprocessableEntity) as error:
 
-        attributes = {"username": fake.user_name(), "pass": fake.password()}
+        attributes = {"username": fake_user.username, "pass": fake_user.password}
 
         authentication_controller.handler(http_request=HttpRequest(body=attributes))
 

@@ -1,5 +1,5 @@
 """Controllers para Authentication"""
-from typing import Type, Dict
+from typing import Type, Dict, Optional
 from mitmirror.presenters.helpers import HttpRequest, HttpResponse
 from mitmirror.errors import HttpBadRequestError, HttpUnprocessableEntity
 from mitmirror.domain.usecases import AuthenticationInterface
@@ -13,7 +13,7 @@ class AuthenticationController(ControllerInterface):
         self.__usecase = usecase
 
     def handler(
-        self, param: any = None, http_request: Type[HttpRequest] = None
+        self, param: Optional[any] = None, http_request: Type[HttpRequest] = None
     ) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
@@ -30,16 +30,18 @@ class AuthenticationController(ControllerInterface):
 
                 response = self.__usecase.authentication(email, password)
 
-                formated_response = self.__format_response(response["data"])
-
-                return formated_response
+                return self.__format_response(response["data"])
 
             raise HttpUnprocessableEntity(
-                message="Esta rota necessita dos seguintes parametros: 'email: str', 'password: str', error"
+                message="""
+                Esta rota necessita dos seguintes parametros: 'email: str', 'password: str', error
+                """
             )
 
         raise HttpBadRequestError(
-            message="Esta rota necessita dos seguintes body-params: 'email: str', 'password: str', error"
+            message="""
+            Esta rota necessita dos seguintes body-params: 'email: str', 'password: str', error
+            """
         )
 
     @classmethod
