@@ -4,8 +4,8 @@ from pytest import fixture
 from mitmirror.infra.tests import mock_user
 from mitmirror.infra.config import DataBaseConnectionHandler
 from mitmirror.config import CONNECTION_STRING
-from .users_routes import users
-from .auth_routes import auth
+from ...mitmirror.main.routes.users_routes import users
+from ...mitmirror.main.routes.auth_routes import auth
 
 
 user = mock_user()
