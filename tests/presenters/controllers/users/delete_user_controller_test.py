@@ -9,12 +9,12 @@ from tests.mocks import mock_user
 user = mock_user()
 
 
-def test_handler(delete_user, user_repository_spy, fake_user):
+def test_handler(delete_user_controller, user_repository_spy, fake_user):
     """Testando o metodo handler"""
 
     param = fake_user.id
 
-    response = delete_user.handler(param=param, http_request=HttpRequest())
+    response = delete_user_controller.handler(param=param, http_request=HttpRequest())
 
     # Testando as entradas:
     assert user_repository_spy.delete_user_params["user_id"] == param
@@ -24,7 +24,7 @@ def test_handler(delete_user, user_repository_spy, fake_user):
     assert "error" not in response.body
 
 
-def test_handler_error_with_invalid_user_id(delete_user, fake_user):
+def test_handler_error_with_invalid_user_id(delete_user_controller, fake_user):
     """
     Testando o error no metodo handler.
     Onde e passado um valor invalido para o parametro user_id.
@@ -35,13 +35,13 @@ def test_handler_error_with_invalid_user_id(delete_user, fake_user):
 
         param = fake_user.name
 
-        delete_user.handler(param=param, http_request=HttpRequest())
+        delete_user_controller.handler(param=param, http_request=HttpRequest())
 
     # Testando as saidas:
     assert "error" in str(error.value)
 
 
-def test_handler_error_without_user_id_param(delete_user):
+def test_handler_error_without_user_id_param(delete_user_controller):
     """
     Testando o erro no metodo handler.
     Onde nao e passado o parametro de user_id.
@@ -50,13 +50,13 @@ def test_handler_error_without_user_id_param(delete_user):
 
     with raises(HttpBadRequestError) as error:
 
-        delete_user.handler(http_request=HttpRequest())
+        delete_user_controller.handler(http_request=HttpRequest())
 
     # Testando as saidas:
     assert "error" in str(error.value)
 
 
-def test_handler_error_not_found(delete_user, fake_user):
+def test_handler_error_not_found(delete_user_controller, fake_user):
     """
     Testando o erro no metodo handler.
     Onde nao e passado o parametro de user_id.
@@ -71,7 +71,7 @@ def test_handler_error_not_found(delete_user, fake_user):
             "tests.mocks.user_repository_spy.UserRepositorySpy.delete_user",
             return_value=[],
         ):
-            delete_user.handler(param=param, http_request=HttpRequest())
+            delete_user_controller.handler(param=param, http_request=HttpRequest())
 
     # Testando as saidas:
     assert "error" in str(error.value)

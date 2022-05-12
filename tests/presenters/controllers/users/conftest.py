@@ -60,7 +60,7 @@ def update_user_controller(user_repository_spy):  # pylint: disable=W0621
 
 
 @fixture
-def delete_user(user_repository_spy):  # pylint: disable=W0621
+def delete_user_controller(user_repository_spy):  # pylint: disable=W0621
     """montagem de delete_user_controller utilizando spy"""
 
     usecase = DeleteUser(user_repository_spy)
