@@ -1,13 +1,16 @@
 """Controller para UpdateUser"""
-from typing import Type
+from typing import Type, Optional
 from datetime import datetime
-from mitmirror.errors import HttpBadRequestError, DefaultError
-from mitmirror.errors.http_error404 import HttpNotFound
-from mitmirror.errors.http_error422 import HttpUnprocessableEntity
-from mitmirror.presenters.interfaces import ControllerInterface
 from mitmirror.domain.usecases import UpdateUserInterface
 from mitmirror.domain.models import User
+from mitmirror.presenters.interfaces import ControllerInterface
 from mitmirror.presenters.helpers import HttpRequest, HttpResponse
+from mitmirror.errors import (
+    HttpBadRequestError,
+    DefaultError,
+    HttpNotFound,
+    HttpUnprocessableEntity,
+)
 
 
 class UpdateUserController(ControllerInterface):
@@ -18,7 +21,7 @@ class UpdateUserController(ControllerInterface):
         self.__usecase = usecase
 
     def handler(
-        self, param: any = None, http_request: Type[HttpRequest] = None
+        self, param: Optional[any] = None, http_request: Type[HttpRequest] = None
     ) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
@@ -39,32 +42,15 @@ class UpdateUserController(ControllerInterface):
         try:
 
             response = None
-            name = None
-            email = None
-            username = None
-            password = None
 
             if not http_request.body:
 
                 raise DefaultError(type_error=400)
 
-            body_params = http_request.body.keys()
-
-            if "name" in body_params:
-
-                name = http_request.body["name"]
-
-            if "email" in body_params:
-
-                email = http_request.body["email"]
-
-            if "username" in body_params:
-
-                username = http_request.body["username"]
-
-            if "password" in body_params:
-
-                password = http_request.body["password"]
+            name = http_request.body.get("name", None)
+            email = http_request.body.get("email", None)
+            username = http_request.body.get("username", None)
+            password = http_request.body.get("password", None)
 
             response = self.__usecase.update(
                 user_id=param,
@@ -74,9 +60,7 @@ class UpdateUserController(ControllerInterface):
                 password=password,
             )
 
-            formated_response = self.__format_response(response["data"])
-
-            return formated_response
+            return self.__format_response(response["data"])
 
         except DefaultError as error:
 

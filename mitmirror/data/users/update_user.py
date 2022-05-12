@@ -68,6 +68,12 @@ class UpdateUser(UpdateUserInterface):
                 last_login=last_login,
             )
 
+            if not user_update:
+
+                raise DefaultError(
+                    message="Usuario nao encontrado, error!", type_error=404
+                )
+
             return {
                 "success": True,
                 "data": self.__format_response(user_update),

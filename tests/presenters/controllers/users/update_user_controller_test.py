@@ -1,8 +1,9 @@
 """Testes para UpdateUserController"""
+from unittest.mock import patch
 from pytest import raises, mark
-from mitmirror.errors import HttpNotFound, HttpBadRequestError, HttpUnprocessableEntity
-from mitmirror.infra.tests import mock_user
 from mitmirror.presenters.helpers.http_models import HttpRequest
+from mitmirror.errors import HttpNotFound, HttpBadRequestError, HttpUnprocessableEntity
+from tests.mocks import mock_user
 
 
 user = mock_user()
@@ -19,7 +20,13 @@ user = mock_user()
     ],
 )
 def test_handler(
-    user_id, name, email, username, password, update_user_with_spy, user_repository_spy
+    user_id,
+    name,
+    email,
+    username,
+    password,
+    update_user_controller,
+    user_repository_spy,
 ):
     """Testando o metodo handler"""
 
@@ -31,7 +38,7 @@ def test_handler(
         "password": password,
     }
 
-    response = update_user_with_spy.handler(
+    response = update_user_controller.handler(
         param=param, http_request=HttpRequest(body=attributes)
     )
 
@@ -45,7 +52,7 @@ def test_handler(
     assert "error" not in response.body
 
 
-def test_handler_error_with_invalid_user_id(update_user_with_spy, fake_user):
+def test_handler_error_with_invalid_user_id(update_user_controller, fake_user):
     """
     Testando o error no metodo handler.
     Onde e passado um valor invalido para o parametro user_id.
@@ -56,13 +63,13 @@ def test_handler_error_with_invalid_user_id(update_user_with_spy, fake_user):
 
         param = fake_user.name
 
-        update_user_with_spy.handler(param=param, http_request=HttpRequest())
+        update_user_controller.handler(param=param, http_request=HttpRequest())
 
     # Testando as saidas:
     assert "error" in str(error.value)
 
 
-def test_handler_error_without_user_id_param(update_user_with_spy):
+def test_handler_error_without_user_id_param(update_user_controller):
     """
     Testando o erro no metodo handler.
     Onde nao e passado o parametro de user_id.
@@ -71,13 +78,13 @@ def test_handler_error_without_user_id_param(update_user_with_spy):
 
     with raises(HttpBadRequestError) as error:
 
-        update_user_with_spy.handler(http_request=HttpRequest())
+        update_user_controller.handler(http_request=HttpRequest())
 
     # Testando as saidas:
     assert "error" in str(error.value)
 
 
-def test_handler_error_not_found(update_user, fake_user):
+def test_handler_error_not_found(update_user_controller, fake_user):
     """
     Testando o erro no metodo handler.
     Onde nao e passado o parametro de user_id.
@@ -94,7 +101,13 @@ def test_handler_error_not_found(update_user, fake_user):
             "password": fake_user.password_hash,
         }
 
-        update_user.handler(param=param, http_request=HttpRequest(body=attributes))
+        with patch(
+            "tests.mocks.user_repository_spy.UserRepositorySpy.update_user",
+            return_value=[],
+        ):
+            update_user_controller.handler(
+                param=param, http_request=HttpRequest(body=attributes)
+            )
 
     # Testando as saidas:
     assert "error" in str(error.value)
