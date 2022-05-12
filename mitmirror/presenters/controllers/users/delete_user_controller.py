@@ -1,5 +1,5 @@
 """Controller para DeleteUser"""
-from typing import Type
+from typing import Type, Optional
 from datetime import datetime
 from mitmirror.errors import HttpBadRequestError, DefaultError
 from mitmirror.errors.http_error404 import HttpNotFound
@@ -18,7 +18,7 @@ class DeleteUserController(ControllerInterface):
         self.__usecase = usecase
 
     def handler(
-        self, param: any = None, http_request: Type[HttpRequest] = None
+        self, param: Optional[any] = None, http_request: Type[HttpRequest] = None
     ) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
@@ -40,9 +40,7 @@ class DeleteUserController(ControllerInterface):
 
             response = self.__usecase.delete(user_id=param)
 
-            formated_response = self.__format_response(response["data"])
-
-            return formated_response
+            return self.__format_response(response["data"])
 
         except DefaultError as error:
 
