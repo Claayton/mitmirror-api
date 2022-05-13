@@ -1,0 +1,38 @@
+version: '3.3'
+
+networks:
+  mitmirror:
+    driver: bridge
+    external: false
+
+volumes:
+  mariadb_volume:
+  mariadb_config:
+
+services:
+
+  mariadb:
+    container_name: mariadb
+    build: ./docker/db
+    restart: always
+    ports:
+     - 3306:3306
+    networks:
+      - mitmirror
+    volumes:
+      - mariadb_volume:/var/lib/mariadb
+      - mariadb_config:/etc/mariadb
+
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: ./docker/api/Dockerfile
+    restart: always
+    ports:
+     - 8080:8080
+    networks:
+      - mitmirror
+    depends_on:
+      - mariadb
+    command: python3 run.py
