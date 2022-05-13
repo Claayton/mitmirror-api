@@ -1,62 +1,35 @@
 """Arquivo para fixtures"""
 from fastapi.testclient import TestClient
 from pytest import fixture
-from mitmirror.infra.tests import mock_user
-from mitmirror.infra.config import DataBaseConnectionHandler
-from mitmirror.config import CONNECTION_STRING
-from ...mitmirror.main.routes.users_routes import users
-from ...mitmirror.main.routes.auth_routes import auth
-
-
-user = mock_user()
-data_base_connection_handler = DataBaseConnectionHandler(CONNECTION_STRING)
-
-
-@fixture(scope="module")
-def fake_user():
-    """Mock de usuario"""
-
-    return user
+from mitmirror.infra.entities import User as UserModel
+from mitmirror.infra.config.database_config import get_session
+from mitmirror.main.routes.users_routes import users
+from mitmirror.main.routes.auth_routes import auth
 
 
 @fixture
 def client_users_with_one_user(fake_user):  # pylint: disable=W0621
     """
     Montando o client com um usuario cadastrado,
-    E deletando no final.
     """
 
-    engine = data_base_connection_handler.get_engine()
-    engine.execute(
-        f"""
-        INSERT INTO users (
-            id,
-            name,
-            email,
-            username,
-            password_hash,
-            secundary_id,
-            is_staff,
-            is_active_user,
-            last_login,
-            date_joined
+    with get_session() as session:
+        new_user = UserModel(
+            id=fake_user.id,
+            name=fake_user.name,
+            email=fake_user.email,
+            username=fake_user.username,
+            password_hash=fake_user.password_hash,
+            secundary_id=fake_user.secundary_id,
+            is_staff=fake_user.is_staff,
+            is_active_user=fake_user.is_active_user,
+            date_joined=fake_user.date_joined,
+            last_login=fake_user.last_login,
         )
-        VALUES (
-            '{fake_user.id}',
-            '{fake_user.name}',
-            '{fake_user.email}',
-            '{fake_user.username}',
-            '{fake_user.password_hash}',
-            '{fake_user.secundary_id}',
-            {fake_user.is_staff},
-            {fake_user.is_active_user},
-            '{fake_user.last_login}',
-            '{fake_user.date_joined}'
-        );
-        """
-    )
+        session.add(new_user)
+        session.commit()
 
-    return TestClient(users)
+    yield TestClient(users)
 
 
 @fixture
@@ -84,43 +57,25 @@ def client_users_with_delete_user(fake_user):  # pylint: disable=W0621
 
 
 @fixture
-def client_auth_with_one_user_and_delete(fake_user):  # pylint: disable=W0621
+def client_auth_with_one(fake_user):  # pylint: disable=W0621
     """
     Montando o client com um usuario cadastrado,
-    E deletando no final.
     """
 
-    engine = data_base_connection_handler.get_engine()
-    engine.execute(
-        f"""
-        INSERT INTO users (
-            id,
-            name,
-            email,
-            username,
-            password_hash,
-            secundary_id,
-            is_staff,
-            is_active_user,
-            last_login,
-            date_joined
+    with get_session() as session:
+        new_user = UserModel(
+            id=fake_user.id,
+            name=fake_user.name,
+            email=fake_user.email,
+            username=fake_user.username,
+            password_hash=fake_user.password_hash,
+            secundary_id=fake_user.secundary_id,
+            is_staff=fake_user.is_staff,
+            is_active_user=fake_user.is_active_user,
+            date_joined=fake_user.date_joined,
+            last_login=fake_user.last_login,
         )
-        VALUES (
-            '{fake_user.id}',
-            '{fake_user.name}',
-            '{fake_user.email}',
-            '{fake_user.username}',
-            '{fake_user.password_hash}',
-            '{fake_user.secundary_id}',
-            {fake_user.is_staff},
-            {fake_user.is_active_user},
-            '{fake_user.last_login}',
-            '{fake_user.date_joined}'
-        );
-        """
-    )
+        session.add(new_user)
+        session.commit()
 
     yield TestClient(auth)
-
-    engine = data_base_connection_handler.get_engine()
-    engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
