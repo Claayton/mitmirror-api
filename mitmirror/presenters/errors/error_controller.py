@@ -7,6 +7,7 @@ from mitmirror.errors import (
     HttpUnauthorized,
     HttpNotFound,
     HttpUnprocessableEntity,
+    HttpForbidden,
 )
 
 
@@ -25,6 +26,7 @@ def handler_errors(error: Type[Exception]) -> Dict:
             HttpUnprocessableEntity,
             HttpUnauthorized,
             HttpNotFound,
+            HttpForbidden,
         ),
     ):
         http_response = HttpResponse(
