@@ -8,9 +8,16 @@ from mitmirror.main.routes.auth_routes import auth
 
 
 @fixture
-def client_users_with_one_user(fake_user):  # pylint: disable=W0621
+def client_users():
+    """Montando o client para users"""
+
+    yield TestClient(users)
+
+
+@fixture
+def client_users_with_one_user(client_users, fake_user):  # pylint: disable=W0621
     """
-    Montando o client com um usuario cadastrado,
+    Montando o client para users, com um usuario cadastrado,
     """
 
     with get_session() as session:
@@ -29,37 +36,13 @@ def client_users_with_one_user(fake_user):  # pylint: disable=W0621
         session.add(new_user)
         session.commit()
 
-    yield TestClient(users)
-
-
-@fixture
-def client_users_with_one_user_and_delete(
-    client_users_with_one_user, fake_user
-):  # pylint: disable=W0621
-    """
-    Montando o client com um usuario cadastrado,
-    """
-
-    yield client_users_with_one_user
-
-    engine = data_base_connection_handler.get_engine()
-    engine.execute(f"DELETE FROM users WHERE id='{fake_user.id}';")
-
-
-@fixture
-def client_users_with_delete_user(fake_user):  # pylint: disable=W0621
-    """Montando o client e deletando usuario no final"""
-
-    yield TestClient(users)
-
-    engine = data_base_connection_handler.get_engine()
-    engine.execute(f"DELETE FROM users WHERE username='{fake_user.username}';")
+    yield client_users
 
 
 @fixture
 def client_auth_with_one(fake_user):  # pylint: disable=W0621
     """
-    Montando o client com um usuario cadastrado,
+    Montando o client para auth, com um usuario cadastrado,
     """
 
     with get_session() as session:

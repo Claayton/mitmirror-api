@@ -1,14 +1,12 @@
 """Testes para as rotas de users"""
-from pytest import mark
 
 
-@mark.skip
-def test_get_users(client_users_with_one_user_and_delete):
+def test_get_users(client_users_with_one_user):
     """Testando a rota get_users"""
 
     url = "/api/users/"
 
-    response = client_users_with_one_user_and_delete.get(url=url)
+    response = client_users_with_one_user.get(url=url)
 
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
@@ -17,12 +15,12 @@ def test_get_users(client_users_with_one_user_and_delete):
     assert "name" in response.json()["data"][0]
 
 
-def test_get_user(client_users_with_one_user_and_delete, fake_user):
+def test_get_user(client_users_with_one_user, fake_user):
     """Testando a rota get_user"""
 
     url = f"/api/users/{fake_user.id}"
 
-    response = client_users_with_one_user_and_delete.get(url=url)
+    response = client_users_with_one_user.get(url=url)
 
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
@@ -31,7 +29,7 @@ def test_get_user(client_users_with_one_user_and_delete, fake_user):
     assert "name" in response.json()["data"]
 
 
-def test_register_user(client_users_with_delete_user, fake_user):
+def test_register_user(client_users, fake_user):
     """Testando a rota register_user"""
 
     url = "/api/users/"
@@ -42,7 +40,7 @@ def test_register_user(client_users_with_delete_user, fake_user):
         "password": fake_user.password,
     }
 
-    response = client_users_with_delete_user.post(url=url, json=json)
+    response = client_users.post(url=url, json=json)
 
     assert response.status_code == 201
     assert isinstance(response.json(), dict)
@@ -51,7 +49,7 @@ def test_register_user(client_users_with_delete_user, fake_user):
     assert "name" in response.json()["data"]
 
 
-def test_update_user(client_users_with_one_user_and_delete, fake_user):
+def test_update_user(client_users_with_one_user, fake_user):
     """Testando a rota update_user"""
 
     url = f"/api/users/{fake_user.id}/"
@@ -61,7 +59,7 @@ def test_update_user(client_users_with_one_user_and_delete, fake_user):
         "username": "meu_nome_nao_e_jhony",
     }
 
-    response = client_users_with_one_user_and_delete.put(url=url, json=json)
+    response = client_users_with_one_user.put(url=url, json=json)
 
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
