@@ -49,5 +49,6 @@ class GetUsers(GetUsersInterface):
                 is_active_user=data.is_active_user,
                 last_login=data.last_login,
                 date_joined=data.date_joined,
-            ) for data in data_list
+            )
+            for data in data_list
         ]
