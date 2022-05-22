@@ -35,7 +35,7 @@ jobs:
       - name: Run tests with pytest
         run: |
           echo 'SECRET_KEY="secret-key-default-for-tests"' > .secrets.toml;
-          pytest -v -x --junitxml=test-result.xml
+          pytest -v -x --cov --junitxml=test-result.xml
       
       - name: publish junit results
         uses: EnricoMi/publish-unit-test-result-action@v1
