@@ -6,9 +6,9 @@ from mitmirror.config import settings
 
 if __name__ == "__main__":
 
-    if not database_exists(settings.database.CONNECTION_STRING):
+    if not database_exists(settings.CONNECTION_STRING):
 
-        create_database(settings.database.CONNECTION_STRING)
+        create_database(settings.CONNECTION_STRING)
 
     create_db()
 
