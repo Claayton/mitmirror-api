@@ -57,19 +57,14 @@ async def get_user(request: RequestFastApi, user_id: int):
 
 
 @users.post("/")
-async def register_user(request: RequestFastApi):
-    """
-    Rota para registrar um novo usuario no sistema.
-    Deve receber os seguintes body-parameters:
-    ('name: str', 'email: str', 'username: str', 'password: any').
-    """
+async def register_user(new_user):
+    """Rota para registrar um novo usuario no sistema."""
 
     response = None
 
     try:
-
-        controller = register_user_composer()
-        response = await request_adapter(request, controller.handler)
+        register = register_user_composer()
+        response = register.handler(params=new_user.dict())
 
     except Exception as error:  # pylint: disable=W0703
 
