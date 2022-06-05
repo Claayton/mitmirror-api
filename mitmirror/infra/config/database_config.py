@@ -12,7 +12,7 @@ SelectOfScalar.inherit_cache = True
 Select.inherit_cache = True
 
 
-engine = create_engine(settings.database.CONNECTION_STRING)
+engine = create_engine(settings.CONNECTION_STRING)
 
 
 def get_session():

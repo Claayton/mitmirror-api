@@ -1,52 +1,34 @@
 """Controller para RegisterUser"""
-from typing import Type, Optional
+from typing import Type, Dict
 from datetime import datetime
 from mitmirror.errors import HttpBadRequestError, DefaultError
-from mitmirror.presenters.interfaces import ControllerInterface
 from mitmirror.domain.usecases import RegisterUserInterface
 from mitmirror.domain.models import User
-from mitmirror.presenters.helpers import HttpRequest, HttpResponse
+from mitmirror.presenters.helpers import HttpResponse
 
 
-class RegisterUserController(ControllerInterface):
+class RegisterUserController:
     """Controller para o caso de uso RegisterUser"""
 
     def __init__(self, usecase: Type[RegisterUserInterface]) -> None:
 
         self.__usecase = usecase
 
-    def handler(
-        self, param: Optional[any] = None, http_request: Type[HttpRequest] = None
-    ) -> HttpResponse:
+    def handler(self, params: Dict) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
         try:
 
-            response = None
-
-            if not http_request.body:
-
-                raise DefaultError(type_error=400)
-
-            body_params = http_request.body.keys()
-
-            if (
-                "name" not in body_params
-                or "email" not in body_params
-                or "username" not in body_params
-                or "password" not in body_params
+            if params is None or (
+                "name" not in params
+                or "email" not in params
+                or "username" not in params
+                or "password" not in params
             ):
 
                 raise DefaultError(type_error=400)
 
-            name = http_request.body["name"]
-            email = http_request.body["email"]
-            username = http_request.body["username"]
-            password = http_request.body["password"]
-
-            response = self.__usecase.register(
-                name=name, email=email, username=username, password=password
-            )
+            response = self.__usecase.register(**params)
 
             return self.__format_response(response["data"])
 

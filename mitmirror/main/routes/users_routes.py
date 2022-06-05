@@ -2,6 +2,12 @@
 from fastapi import APIRouter, Request as RequestFastApi
 from fastapi.responses import JSONResponse
 from mitmirror.main.adapters import request_adapter
+from mitmirror.main.serializers.users import (
+    UserOut,
+    UsersOut,
+    RegisterUserIn,
+    UpdateUserIn,
+)
 from mitmirror.presenters.errors import handler_errors
 from mitmirror.main.composers.users import (
     get_users_composer,
@@ -14,7 +20,7 @@ from mitmirror.main.composers.users import (
 users = APIRouter(prefix="/api/users", tags=["user"])
 
 
-@users.get("/")
+@users.get("/", response_model=UsersOut, status_code=200)
 async def get_users(request: RequestFastApi):
     """
     Rota para buscar todos os usuarios registrados no sistema.
@@ -34,12 +40,10 @@ async def get_users(request: RequestFastApi):
     return JSONResponse(status_code=response.status_code, content=response.body)
 
 
-@users.get("/{user_id:int}/")
+@users.get("/{user_id:int}/", response_model=UserOut, status_code=200)
 async def get_user(request: RequestFastApi, user_id: int):
     """
-    Rota para buscar um usuario registrado no sistema.
-    :param user_id: ID do usuario para busca no db.
-    :return: Um usuario e informacoes do mesmo.
+    Rota para buscar um usuario registrado no sistema, identificado pelo user_id.
     """
 
     response = None
@@ -56,20 +60,15 @@ async def get_user(request: RequestFastApi, user_id: int):
     return JSONResponse(status_code=response.status_code, content=response.body)
 
 
-@users.post("/")
-async def register_user(request: RequestFastApi):
-    """
-    Rota para registrar um novo usuario no sistema.
-    Deve receber os seguintes body-parameters:
-    ('name: str', 'email: str', 'username: str', 'password: any').
-    """
+@users.post("/", response_model=UserOut, status_code=201)
+async def register_user(new_user: RegisterUserIn):
+    """Rota para registrar um novo usuario no sistema."""
 
     response = None
 
     try:
-
-        controller = register_user_composer()
-        response = await request_adapter(request, controller.handler)
+        register = register_user_composer()
+        response = register.handler(params=new_user.dict())
 
     except Exception as error:  # pylint: disable=W0703
 
@@ -78,22 +77,18 @@ async def register_user(request: RequestFastApi):
     return JSONResponse(status_code=response.status_code, content=response.body)
 
 
-@users.put("/{user_id:int}/")
-async def update_user(request: RequestFastApi, user_id: int):
+@users.put("/{user_id:int}/", response_model=UserOut, status_code=200)
+async def update_user(update_user_data: UpdateUserIn, user_id: int):
     """
-    Rota para dados de um usuario ja registrado no sistema.
-    Deve receber os body-parameters 'user_id' + um dos seguintes:
-    ('name: str', 'email: str', 'username: str', 'password: any').
-    :param user_id: ID do usuario para busca no db.
-    :return: Um usuario e informacoes do mesmo.
+    Rota para atualizar dados de um usuario ja registrado no sistema, identificado pelo user_id.
     """
 
     response = None
 
     try:
 
-        controller = update_user_composer()
-        response = await request_adapter(request, controller.handler, user_id)
+        update = update_user_composer()
+        response = update.handler(params=update_user_data.dict(), user_id=user_id)
 
     except Exception as error:  # pylint: disable=W0703
 
@@ -102,12 +97,10 @@ async def update_user(request: RequestFastApi, user_id: int):
     return JSONResponse(status_code=response.status_code, content=response.body)
 
 
-@users.delete("/{user_id:int}/")
+@users.delete("/{user_id:int}/", response_model=UserOut, status_code=200)
 async def delete_user(request: RequestFastApi, user_id: int):
     """
-    Deleta um usuario que esteja cadastrado no banco de dados.
-    :param user_id: ID do usuario para busca no db.
-    :return: Um usuario e informacoes do mesmo.
+    Deleta um usuario que esteja cadastrado no banco de dados, identificado pelo user_id.
     """
 
     response = None

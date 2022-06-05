@@ -1,5 +1,6 @@
 """Instanciando o app"""
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from ..routes import users, auth
 
@@ -10,9 +11,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="MitMirrorApi",
         version="0.0.1",
-        description="""
-        Backend do MitMirror.
-        """,
+        description="""Backend para o MitMirror""",
     )
 
     app.add_middleware(
@@ -25,5 +24,10 @@ def create_app() -> FastAPI:
 
     app.include_router(users)
     app.include_router(auth)
+
+    @app.get("/")
+    def root():
+        """Rota raiz"""
+        return RedirectResponse("/docs")
 
     return app

@@ -1,10 +1,9 @@
 """Controller para UpdateUser"""
-from typing import Type, Optional
+from typing import Type, Dict
 from datetime import datetime
 from mitmirror.domain.usecases import UpdateUserInterface
 from mitmirror.domain.models import User
-from mitmirror.presenters.interfaces import ControllerInterface
-from mitmirror.presenters.helpers import HttpRequest, HttpResponse
+from mitmirror.presenters.helpers import HttpResponse
 from mitmirror.errors import (
     HttpBadRequestError,
     DefaultError,
@@ -13,27 +12,23 @@ from mitmirror.errors import (
 )
 
 
-class UpdateUserController(ControllerInterface):
+class UpdateUserController:
     """Controller para o caso de uso UpdateUser"""
 
     def __init__(self, usecase: Type[UpdateUserInterface]) -> None:
 
         self.__usecase = usecase
 
-    def handler(
-        self, param: Optional[any] = None, http_request: Type[HttpRequest] = None
-    ) -> HttpResponse:
+    def handler(self, user_id: int, params: Dict = None) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
-        response = None
-
-        if not param:
+        if not user_id:
 
             raise HttpBadRequestError(
                 message="Essa requisiçao exige o seguinte parametro: <int:user_id>, error!"
             )
 
-        if not str(param).isnumeric():
+        if not str(user_id).isnumeric():
 
             raise HttpUnprocessableEntity(
                 message="O parametro <user_id> deve ser do tipo inteiro, error!"
@@ -41,19 +36,17 @@ class UpdateUserController(ControllerInterface):
 
         try:
 
-            response = None
-
-            if not http_request.body:
+            if params is None:
 
                 raise DefaultError(type_error=400)
 
-            name = http_request.body.get("name", None)
-            email = http_request.body.get("email", None)
-            username = http_request.body.get("username", None)
-            password = http_request.body.get("password", None)
+            name = params.get("name", None)
+            email = params.get("email", None)
+            username = params.get("username", None)
+            password = params.get("password", None)
 
             response = self.__usecase.update(
-                user_id=param,
+                user_id=user_id,
                 name=name,
                 email=email,
                 username=username,
