@@ -1,7 +1,6 @@
 """Testes para UpdateUserController"""
 from unittest.mock import patch
 from pytest import raises, mark
-from mitmirror.presenters.helpers.http_models import HttpRequest
 from mitmirror.errors import HttpNotFound, HttpBadRequestError, HttpUnprocessableEntity
 from tests.mocks import mock_user
 
@@ -30,7 +29,6 @@ def test_handler(
 ):
     """Testando o metodo handler"""
 
-    param = user_id
     attributes = {
         "name": name,
         "email": email,
@@ -39,8 +37,7 @@ def test_handler(
     }
 
     response = update_user_controller.handler(
-        param=param, http_request=HttpRequest(body=attributes)
-    )
+        user_id=user_id, params=attributes)
 
     # Testando as entradas:
     assert user_repository_spy.update_user_params["name"] == attributes["name"]
@@ -61,9 +58,7 @@ def test_handler_error_with_invalid_user_id(update_user_controller, fake_user):
 
     with raises(HttpUnprocessableEntity) as error:
 
-        param = fake_user.name
-
-        update_user_controller.handler(param=param, http_request=HttpRequest())
+        update_user_controller.handler(user_id=fake_user.name, params={})
 
     # Testando as saidas:
     assert "error" in str(error.value)
@@ -78,7 +73,7 @@ def test_handler_error_without_user_id_param(update_user_controller):
 
     with raises(HttpBadRequestError) as error:
 
-        update_user_controller.handler(http_request=HttpRequest())
+        update_user_controller.handler(user_id=None, params={})
 
     # Testando as saidas:
     assert "error" in str(error.value)
@@ -93,7 +88,6 @@ def test_handler_error_not_found(update_user_controller, fake_user):
 
     with raises(HttpNotFound) as error:
 
-        param = fake_user.id
         attributes = {
             "name": fake_user.name,
             "email": fake_user.email,
@@ -106,8 +100,7 @@ def test_handler_error_not_found(update_user_controller, fake_user):
             return_value=[],
         ):
             update_user_controller.handler(
-                param=param, http_request=HttpRequest(body=attributes)
-            )
+                user_id=fake_user.id, params=attributes)
 
     # Testando as saidas:
     assert "error" in str(error.value)

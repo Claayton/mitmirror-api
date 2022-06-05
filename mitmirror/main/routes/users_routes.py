@@ -74,7 +74,7 @@ async def register_user(new_user):
 
 
 @users.put("/{user_id:int}/")
-async def update_user(request: RequestFastApi, user_id: int):
+async def update_user(update_user_data, user_id: int):
     """
     Rota para dados de um usuario ja registrado no sistema.
     Deve receber os body-parameters 'user_id' + um dos seguintes:
@@ -87,8 +87,8 @@ async def update_user(request: RequestFastApi, user_id: int):
 
     try:
 
-        controller = update_user_composer()
-        response = await request_adapter(request, controller.handler, user_id)
+        update = update_user_composer()
+        response = update.handler(params=update_user_data.dict(), user_id=user_id)
 
     except Exception as error:  # pylint: disable=W0703
 
