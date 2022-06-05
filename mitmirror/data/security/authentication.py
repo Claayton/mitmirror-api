@@ -2,7 +2,7 @@
 from typing import Type, Dict
 from datetime import datetime, timedelta
 import jwt
-from mitmirror.config import SECRET_KEY
+from mitmirror.config import settings
 from mitmirror.data.interfaces import UserRepositoryInterface
 from mitmirror.domain.usecases import PasswordHashInterface
 from mitmirror.errors import HttpUnauthorized, HttpForbidden
@@ -50,7 +50,7 @@ class Authentication(AuthenticationInterface):
             "username": user.username,
         }
 
-        token = jwt.encode(payload=payloads, key=SECRET_KEY)
+        token = jwt.encode(payload=payloads, key=settings.SECRET_KEY)
 
         return {
             "success": True,

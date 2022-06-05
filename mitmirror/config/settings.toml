@@ -1,4 +1,0 @@
-name = "mitmirror"
-
-[database]
-connection_string = "sqlite:///mitmirror.db"

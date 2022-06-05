@@ -20,7 +20,7 @@ def test_handler(delete_user_controller, user_repository_spy, fake_user):
     assert user_repository_spy.delete_user_params["user_id"] == param
 
     # Testando as saidas:
-    assert response.status_code == 204
+    assert response.status_code == 200
     assert "error" not in response.body
 
 

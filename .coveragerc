@@ -1,0 +1,7 @@
+[run]
+source = mitmirror
+
+[report]
+omit = 
+    */python?.?/*
+    */config/*

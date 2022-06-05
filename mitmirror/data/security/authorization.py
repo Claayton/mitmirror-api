@@ -5,7 +5,7 @@ import jwt
 from mitmirror.data.interfaces import UserRepositoryInterface
 from mitmirror.domain.usecases import AuthorizationInterface
 from mitmirror.errors import HttpUnauthorized, HttpForbidden
-from mitmirror.config import SECRET_KEY
+from mitmirror.config import settings
 
 
 class Authorization(AuthorizationInterface):
@@ -35,7 +35,7 @@ class Authorization(AuthorizationInterface):
 
         try:
 
-            data = jwt.decode(jwt=token, key=SECRET_KEY, algorithms="HS256")
+            data = jwt.decode(jwt=token, key=settings.SECRET_KEY, algorithms="HS256")
             current_user = self.__user_repository.get_user(email=data["email"])
 
         except Exception as error:  # pylint: disable=W0703

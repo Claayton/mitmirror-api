@@ -1,7 +1,7 @@
 .idea/
 venv/
 env/
-.env
+**.env
 
 *.pyc
 **/__pycache__
@@ -21,3 +21,6 @@ app/tests.sqlite3
 storage.db
 tests.db
 mitmirror.db
+
+# Ignore dynaconf secret files
+.secrets.*

@@ -74,4 +74,4 @@ class DeleteUserController(ControllerInterface):
             },
         }
 
-        return HttpResponse(status_code=204, body=response)
+        return HttpResponse(status_code=200, body=response)
