@@ -75,7 +75,7 @@ def test_delete_user(client_users_with_one_user, fake_user):
 
     response = client_users_with_one_user.delete(url=url)
 
-    assert response.status_code == 204
+    assert response.status_code == 200
     assert isinstance(response.json(), dict)
     assert isinstance(response.json()["data"], dict)
     assert "id" in response.json()["data"]
