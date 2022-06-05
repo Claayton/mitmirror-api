@@ -1,5 +1,5 @@
 """Controller para RegisterUser"""
-from typing import Type
+from typing import Type, Dict
 from datetime import datetime
 from mitmirror.errors import HttpBadRequestError, DefaultError
 from mitmirror.domain.usecases import RegisterUserInterface
@@ -14,7 +14,7 @@ class RegisterUserController:
 
         self.__usecase = usecase
 
-    def handler(self, params: dict) -> HttpResponse:
+    def handler(self, params: Dict) -> HttpResponse:
         """Metodo para chamar o caso de uso"""
 
         try:

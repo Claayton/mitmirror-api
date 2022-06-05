@@ -36,8 +36,7 @@ def test_handler(
         "password": password,
     }
 
-    response = update_user_controller.handler(
-        user_id=user_id, params=attributes)
+    response = update_user_controller.handler(user_id=user_id, params=attributes)
 
     # Testando as entradas:
     assert user_repository_spy.update_user_params["name"] == attributes["name"]
@@ -99,8 +98,7 @@ def test_handler_error_not_found(update_user_controller, fake_user):
             "tests.mocks.user_repository_spy.UserRepositorySpy.update_user",
             return_value=[],
         ):
-            update_user_controller.handler(
-                user_id=fake_user.id, params=attributes)
+            update_user_controller.handler(user_id=fake_user.id, params=attributes)
 
     # Testando as saidas:
     assert "error" in str(error.value)
